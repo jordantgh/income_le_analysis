@@ -1,3 +1,4 @@
 .vscode
-industries_bycounty/*
-!industries_bycounty/*.r
+data/external_data/industry/*.txt
+data/external_data/industry/*.tsv
+*.zip
