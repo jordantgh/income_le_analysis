@@ -1,2 +1,3 @@
+.vscode
 industries_bycounty/*
 !industries_bycounty/*.r
