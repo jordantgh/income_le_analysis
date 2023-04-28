@@ -1,2 +1,2 @@
-industry_data/*
-!industry_data/*.r
+industries_bycounty/*
+!industries_bycounty/*.r
