@@ -13,3 +13,7 @@
 6. Table 11 contains county level LE by gender by income quartile; 12 contains county-level covariates
 
 Note: Race adjustment is performed by normalising the racial composition of each geographical unit to that of the overall national average
+
+---
+
+I have written some code to add the industry data as a covariate, but I'm not sure if this is the best approach. I'm thinking it might make more sense to keep the employment data separate and merge it in situ for analysis purposes.
