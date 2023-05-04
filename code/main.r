@@ -4,8 +4,10 @@
 project_root <- here::here()
 options(box.path = project_root)
 
-box::use(code/county/industries/convert_naics_codes_txt_to_csv)
-box::use(code/county/industries/map_industries_to_counties)
-box::use(code/county/industries/map_dominant_industries_to_covariates)
-box::use(code/db/init_db)
-box::use(code/plots/gini_vs_le_gap)
+box::use(
+    code/region/assign_region,
+    code/county/add_industries/convert_naics_codes_txt_to_csv,
+    code/county/add_industries/map_industries_to_counties,
+    code/county/add_industries/map_dominant_industries_to_covariates,
+    code/db/init_db, code/county/process_tables/county_covars_cleanup
+)
