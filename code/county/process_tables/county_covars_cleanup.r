@@ -11,8 +11,8 @@ box::use(
   tibble[as_tibble]
 )
 
-
-db <- dbConnect(SQLite(), g("{globalenv()$project_root}/income_le.sqlite"))
+dir <- globalenv()$project_root
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
 tables <- dbGetQuery(
     db,

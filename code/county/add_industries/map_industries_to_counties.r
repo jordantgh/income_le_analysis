@@ -1,4 +1,9 @@
-box::use(dplyr[...], readr[...], tidyr[...], glue[g = glue])
+box::use(
+    dplyr[...],
+    readr[...],
+    tidyr[...],
+    glue[g = glue]
+)
 
 dir <- g("{globalenv()$project_root}/data/external_data/industry")
 fname <- "cbp01co"
