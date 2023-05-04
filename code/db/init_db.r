@@ -1,4 +1,10 @@
-box::use(DBI[...], tools[...], readr[...], RSQLite[SQLite], glue[g = glue])
+box::use(
+  DBI[...],
+  tools[...],
+  readr[...],
+  RSQLite[SQLite],
+  glue[g = glue]
+)
 
 get_csv_files <- function(path) {
   files <- list.files(path, full.names = TRUE, recursive = TRUE)
