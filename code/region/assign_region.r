@@ -1,4 +1,11 @@
-library(tidyverse)
+box::use(
+    readr[read_csv, write_csv],
+    magrittr[`%>%`],
+    dplyr[mutate],
+    glue[g = glue]
+)
+
+dir <- g("{globalenv()$project_root}/data")
 
 add_region <- function(xwalk) {
     # Define the mapping of state abbreviations to regions
@@ -32,6 +39,9 @@ add_region <- function(xwalk) {
         mutate(Region = sapply(stateabbrv, state_to_region))
 }
 
-xwalk <- read_csv("data/chetty_online_tables/cty_cz_st_crosswalk.csv")
+xwalk <- read_csv(g("{dir}/chetty_online_tables/cty_cz_st_crosswalk.csv"))
 region_xwalk <- add_region(xwalk)
-write_csv(region_xwalk, "data/derived_tables/cty_cz_st_crosswalk_with_region.csv") # nolint
+write_csv(
+    region_xwalk,
+    g("{dir}/derived_tables/cty_cz_st_crosswalk_with_region.csv")
+)
