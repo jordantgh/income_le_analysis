@@ -1,9 +1,14 @@
-library(tidyverse)
+box::use(dplyr[...], readr[...], glue[g = glue])
 
-covariates <- read_csv("data/chetty_online_tables/county/t12_countCovariates.csv") #nolint
+dir <- g("{globalenv()$project_root}/data")
+covariates <- read_csv(g("{dir}/chetty_online_tables/county/t12_countCovariates.csv")) #nolint
 
-industries <- read_csv("data/external_data/industry/county_dominant_industries_2001.csv") #nolint
+industries <- read_csv(g("{dir}/derived_tables/county/county_dominant_industries_2001.csv")) #nolint
+
+# remove nonessential columns from industries
+industries <- industries %>%
+    select(-industry_naics_code)
 
 covariates <- left_join(covariates, industries, by = "cty")
 
-write_csv(covariates, "data/derived_tables/county/countyCovariates_with_industries.csv") #nolint
+write_csv(covariates, g("{dir}/derived_tables/county/countyCovariates_with_industries.csv")) #nolint

@@ -1,8 +1,7 @@
-rm(list = ls())
-library(glue)
-g <- glue::glue
+box::use(utils[read.delim, write.csv], glue[g = glue])
 
-dir <- "data/external_data/industry"
+
+dir <- g("{globalenv()$project_root}/data/external_data/industry")
 fname <- "naics_codes_1998_to_2002"
 
 system(g("wget https://www2.census.gov/programs-surveys/susb/technical-documentation/{fname}.txt -O {dir}/{fname}.txt")) #nolint
