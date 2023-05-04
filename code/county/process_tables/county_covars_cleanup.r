@@ -25,24 +25,19 @@ tables <- dbGetQuery(
 
 # get the columns for the countyCovariates_with_industries table
 covariateschema <- dbGetQuery(
-    db,
-    "
+    db, "
     PRAGMA table_info(countyCovariates_with_industries);
-
     "
 )
 
 countyleschema <- dbGetQuery(
-    db,
-    "
+    db, "
     PRAGMA table_info(t11_countyLE_bygender_byincquartile);
-
     "
 )
 
 le_agg <- dbGetQuery(
-    db,
-    "
+    db, "
     SELECT
     cty,
     cty_pop2000,
@@ -75,7 +70,6 @@ le_agg <- dbGetQuery(
     (count_q4_F + count_q4_M)) as sd_le_agg_q4
 
     FROM t11_countyLE_bygender_byincquartile;
-
     "
 )
 
@@ -118,10 +112,8 @@ cov_table <- dbGetQuery(
 )
 
 full_covariates <- dbGetQuery(
-    db,
-    "
+    db, "
     SELECT * FROM countyCovariates_with_industries;
-
     "
 )
 
