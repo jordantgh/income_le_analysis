@@ -1,46 +1,23 @@
 box::use(
-  DBI[dbConnect, dbGetQuery, dbDisconnect],
-  RSQLite[SQLite],
-  glue[g = glue],
-  ggplot2[...],
-  dplyr[...],
-  purrr[map, pmap_dfc],
-  utils[head, tail],
-  stats[sd, lm],
-  mice[md.pattern, mice, complete],
-  tibble[as_tibble]
+    DBI[dbConnect, dbGetQuery, dbDisconnect],
+    RSQLite[SQLite],
+    glue[g = glue],
+    ggplot2[...],
+    dplyr[...],
+    purrr[keep, map, pmap_dfc],
+    utils[head, tail],
+    stats[sd, lm],
+    mice[md.pattern, mice, complete],
+    tibble[as_tibble]
 )
 
-dir <- globalenv()$project_root
+dir <- getOption("project_root")
 db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
-
-tables <- dbGetQuery(
-    db,
-    "
-    SELECT name FROM sqlite_schema
-    WHERE type='table'
-    ORDER BY name;
-    "
-)
-
-# get the columns for the countyCovariates_with_industries table
-covariateschema <- dbGetQuery(
-    db, "
-    PRAGMA table_info(countyCovariates_with_industries);
-    "
-)
-
-countyleschema <- dbGetQuery(
-    db, "
-    PRAGMA table_info(t11_countyLE_bygender_byincquartile);
-    "
-)
 
 le_agg <- dbGetQuery(
     db, "
     SELECT
     cty,
-    cty_pop2000,
 
     /* Calculate weighted average for point estimates */
     (le_agg_q1_F * count_q1_F + le_agg_q1_M * count_q1_M) /
@@ -73,101 +50,107 @@ le_agg <- dbGetQuery(
     "
 )
 
-cov_table <- dbGetQuery(
-    db,
-    "
-    SELECT
-    cty,
-
-    /* Economic variables */
-    gini99,
-    hhinc00,
-    unemp_rate,
-    cs00_seg_inc,
-    cs00_seg_inc_pov25,
-    cs00_seg_inc_aff75,
-    inc_share_1perc,
-    median_house_value,
-
-    /* Demographic variables */
-    pop_density,
-    mig_inflow,
-    cs_frac_black,
-    cs_frac_hisp,
-    cs_born_foreign,
-
-    /* Health variables */
-    cur_smoke_q1,
-    cur_smoke_q2,
-    cur_smoke_q3,
-    cur_smoke_q4,
-    bmi_obese_q1,
-    bmi_obese_q2,
-    bmi_obese_q3,
-    bmi_obese_q4
-
-    FROM countyCovariates_with_industries;
-
-    "
-)
-
 full_covariates <- dbGetQuery(
     db, "
     SELECT * FROM countyCovariates_with_industries;
     "
 )
 
+crosswalk <- dbGetQuery(
+    db, "
+    SELECT cty, Region FROM cty_cz_st_crosswalk_with_region;
+    "
+)
+
 dbDisconnect(db)
 
-# Join the two tables
-le_covars <- left_join(le_agg, cov_table, by = "cty")
+# Join the tables
+
+unwanted_vars <- c(
+    "csa",
+    "csa_name",
+    "cbsa",
+    "cbsa_name",
+    "naics",
+    "tuition"
+)
+
+non_imputed <- c(
+    "cty",
+    "county_name",
+    "cz",
+    "cz_name",
+    "cz_pop2000",
+    "state_id",
+    "stateabbrv",
+    "statename",
+    "Region",
+    "intersects_msa",
+    "description",
+    "taxrate",
+    "tax_st_diff_top20"
+    )
+
+original_df <- left_join(le_agg, full_covariates, by = "cty") %>%
+    left_join(crosswalk, by = "cty")
+
+le_covars <- original_df %>%
+    select(!all_of(c(non_imputed, unwanted_vars)))
 
 # clean the joined table
 
-# (no dups, any(duplicated(le_covars)) = FALSE)
-
 # check out of range values
-map(le_covars, \(x) print(summary(x)))
-
-# replace zeros with NAs (none of the variables should plausibly be zero)
-le_covars[le_covars == 0] <- NA
-
-# replace >= 1 in fractional columns which have them with NAs
-fcols_upper <- c(
-    "gini99",
-    "cur_smoke_q1",
-    "cur_smoke_q4",
-    "bmi_obese_q1",
-    "bmi_obese_q2",
-    "bmi_obese_q3"
+overview <- map(
+    le_covars,
+    \(col) g("MAX: {max(col, na.rm = TRUE)} \n MIN: {min(col, na.rm = TRUE)}")
 )
 
-map(fcols_upper, \(col) le_covars[[col]][le_covars[[col]] >= 1] <<- NA)
+# replace <= 0 with NAs (none of the variables should plausibly be zero or less)
 
-# check missing values
-missing_pattern <- md.pattern(le_covars) %>% as_tibble()
+# columns where <= 0 is plausible
+leq_0_not_NA <-
+    "taxrate|tax_st_diff_top20|subcty_exp_pc|score_r|lf_d|pop_d|scap_ski|_z"
 
-# select variables with missing values
-have_missing <- missing_pattern %>%
-    select(where(~ tail(., 1) > 0)) %>%
-    names() %>%
-    head(-1) # remove md.pattern summary column
+le_covars <- le_covars %>%
+    mutate(across(!matches(leq_0_not_NA), \(x) replace(x, x <= 0, NA)))
 
-# filter df for regression imputation
-df_for_cor <- le_covars %>% select(-c(1, 2))
+# replace >= 1 in fractional columns which have them with NAs
+
+# select columns with potentially out of bounds fractional values
+potential_cols <- le_covars %>%
+    select_if(\(x) max(x, na.rm = TRUE) >= 1) %>%
+    names()
+
+potential_cols <- overview %>% keep(names(.) %in% potential_cols)
+
+# matching cols regex
+greq_1_NA <- "gini|inc_share_1perc|cs00_|cur_smoke|bmi_obese|exercise"
+
+# replace with NAs
+le_covars <- le_covars %>%
+    mutate(across(matches(greq_1_NA), \(x) replace(x, x >= 1, NA)))
+
+# remove cols with excess missingness (> 5%)
+le_covars <- le_covars %>% select_if(\(x) {
+    sum(is.na(x)) / nrow(le_covars) < 0.05
+})
+
 
 # store original summary statistics prior to scaling
-original_means <- map(df_for_cor, \(x) mean(x, na.rm = TRUE))
-original_sds <- map(df_for_cor, \(x) sd(x, na.rm = TRUE))
+original_means <- le_covars %>% map(\(col) mean(col, na.rm = TRUE))
+original_sds <- le_covars %>% map(\(col) sd(col, na.rm = TRUE))
 
 # convert columns to z scores
-df_for_cor <- df_for_cor %>% mutate_all(~ as.numeric(scale(.)))
+le_covars <- le_covars %>% mutate(across(
+    everything(),
+    \(col) as.numeric(scale(col))
+))
 
 # impute with mice
-imp <- mice(df_for_cor, m = 1, maxit = 20, seed = 123, printFlag = FALSE)
+imp <- mice(le_covars, m = 1, maxit = 20, seed = 123, printFlag = FALSE)
 ## n.b. checked convergence with plot(imp), looks good at 20 iterations
 
-# remove id columns
+# remove mice-inserted cols
 imputed_z <- complete(imp, action = "long") %>% select(-c(1, 2))
 
 # convert back to original scale
@@ -178,35 +161,10 @@ final_imputed <- pmap_dfc(
     }
 )
 
+# add the id columns back
+final_imputed <- original_df %>%
+    select(all_of(non_imputed)) %>%
+    bind_cols(final_imputed)
 
-# add the cty and cty_pop2000 columns back in
-final_imputed <- final_imputed %>%
-    as_tibble() %>%
-    mutate(
-        cty = le_covars$cty,
-        cty_pop2000 = le_covars$cty_pop2000,
-        .before = le_agg_q1
-    )
-
-# compute lm weight by population
-mod <- lm(
-    formula = "bmi_obese_q3 ~ bmi_obese_q2",
-    data = final_imputed[final_imputed$bmi_obese_q3 > 0 &
-        final_imputed$bmi_obese_q2 > 0, ],
-    weights = cty_pop2000
-)
-
-
-# Test plot
-plot <- ggplot(
-    final_imputed,
-    aes(x = bmi_obese_q3, y = bmi_obese_q2)
-) +
-    geom_point(aes(size = cty_pop2000), shape = 16, alpha = 0.35) +
-    geom_abline(
-        intercept = mod$coefficients[1],
-        slope = mod$coefficients[2],
-        color = "red"
-    ) +
-    labs(x = "Obesity rate (q3)", y = "Obesity rate (q2)") +
-    theme_bw()
+outdir <- g("{dir}/data/derived_tables/temp")
+readr::write_csv(final_imputed, g("{outdir}/final_imputed.csv"))
