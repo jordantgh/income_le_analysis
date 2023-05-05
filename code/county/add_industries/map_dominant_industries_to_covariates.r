@@ -4,7 +4,7 @@ box::use(
     glue[g = glue]
 )
 
-dir <- g("{globalenv()$project_root}/data")
+dir <- g("{getOption('project_root')}/data")
 covariates <- read_csv(g("{dir}/chetty_online_tables/county/t12_countCovariates.csv")) # nolint
 
 industries <- read_csv(g("{dir}/derived_tables/county/county_dominant_industries_2001.csv")) # nolint

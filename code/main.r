@@ -1,9 +1,6 @@
 # this script will orchestrate all the other scripts
 # and set up the environment
 
-project_root <- here::here()
-options(box.path = project_root)
-
 box::use(
     code/region/assign_region,
     code/county/add_industries/convert_naics_codes_txt_to_csv,

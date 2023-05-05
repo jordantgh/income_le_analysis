@@ -3,8 +3,7 @@ box::use(
   glue[g = glue]
 )
 
-
-dir <- g("{globalenv()$project_root}/data/external_data/industry")
+dir <- g("{getOption('project_root')}/data/external_data/industry")
 fname <- "naics_codes_1998_to_2002"
 
 system(g("wget https://www2.census.gov/programs-surveys/susb/technical-documentation/{fname}.txt -O {dir}/{fname}.txt")) # nolint
