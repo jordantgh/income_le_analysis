@@ -1,0 +1,181 @@
+---
+title: |
+    | \textbf{Chetty et al. (2016) replication}
+author: |
+    | Jordan Taylor
+output: html_document
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("../../../.Rprofile")
+```
+
+# Import libraries and functions
+
+I use the `box` package to import libraries and functions. This is a cool library that makes it easy to modularise code and bring in custom modules as dependencies in the same breath as, e.g., CRAN packages.
+
+```{r}
+box::use(
+    DBI[dbConnect, dbGetQuery, dbDisconnect],
+    RSQLite[SQLite],
+    glue[g = glue],
+    ggplot2[...],
+    dplyr[...],
+    purrr[keep, map, pmap_dfc],
+    utils[head, tail],
+    stats[sd, lm],
+    mice[md.pattern, mice, complete],
+    tibble[as_tibble],
+    rlang[parse_expr],
+    code / county / process_tables / queries[...],
+    code / county / process_tables / cleanup_functions[...],
+    code / county / process_tables / classes[...]
+)
+```
+
+# Connect to database and import tables
+
+I next bring in the data, currently stored in a SQLite database. This is overengineered for the current case since the data can easily all fit in memory, but doing things this way makes the project far more scalable. The queries are a bit verbose, so they are wrapped in functions stored in a separate file, `queries.r`, which is imported above. Note the use of a custom `option` variable, `project_root`, which is set in the `.Rprofile` file in the project root directory. I prefer this approach to relying on relative paths, which break as soon as you move from the project root directory in your execution environment. In the imports I alias the `glue` function for string interpolation to `g` for brevity (I am inspired here by f string literals in Python).
+
+```{r}
+dir <- getOption("project_root")
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
+
+cty_le_agg <- get_cty_le_agg(db)
+cty_covariates <- get_cty_covariates(db)
+cz_le_agg <- get_cz_le_agg(db)
+cz_covariates <- get_cz_covariates(db)
+cty_crosswalk <- get_cty_crosswalk(db)
+cz_crosswalk <- get_cz_crosswalk(db)
+
+dbDisconnect(db)
+```
+
+# Join life expectancy, covariates, and crosswalk tables
+
+The data tables from Chetty *et al* are split into life-expectancy and covariates tables, so here I join them together. I also join in the crosswalk tables, which map counties -> commuting zones -> states -> regions.
+
+```{r}
+cty_data <- left_join(cty_le_agg, cty_covariates, by = "cty") %>%
+    left_join(cty_crosswalk, by = "cty")
+
+cz_data <- left_join(cz_le_agg, cz_covariates, by = "cz") %>%
+    left_join(cz_crosswalk, by = "cz")
+```
+
+# Set aside variables that will be ignored for imputation
+
+Some variables are not imputed, either because they are not used in the analysis or because they are not imputable. I set these aside here. The "unwanted" cols are removed entirely, the "non-imputed" cols will be be added back in after imputation. Unfortunately, SQL doesn't have a convenient way to `SELECT * EXCEPT ...`, so rather than list 60+ columns to select in the SQL query, I just select everything and remove the unwanted ones here.
+
+```{r}
+cty_unwanted <- c(
+    "csa",
+    "csa_name",
+    "cbsa",
+    "cbsa_name",
+    "naics",
+    "tuition"
+)
+
+cty_non_imputed <- c(
+    "cty",
+    "county_name",
+    "cz",
+    "cz_name",
+    "cz_pop2000",
+    "state_id",
+    "stateabbrv",
+    "statename",
+    "Region",
+    "intersects_msa",
+    "description"
+)
+
+cty_covars <- cty_data %>% StripCols(c(cty_unwanted, cty_non_imputed))
+
+cz_non_imputed <- c(
+    "cz",
+    "czname",
+    "pop2000",
+    "fips",
+    "stateabbrv",
+    "statename",
+    "Region",
+    "taxrate",
+    "tax_st_diff_top20"
+)
+
+cz_covars <- cz_data %>% StripCols(cz_non_imputed)
+```
+
+# Add constraints and filter accordingly
+
+The imputation approach I will be employing imputes on `NA` values. The data as is do not have many `NA`s, but there are many implausible values (for example, negative graduation rates, or gini coefficients >1). My approach is to identify implausible values and `NA` them for imputation. Deciding which values are implausible requires some manual inspection and knowledge about the kind of constraints that should apply to different variables.
+
+As the Chetty *et al* data has over 60 covariates, rather than manually inspect each one, I thought it would be good to at least first select covariates that *might* have implausible values. Looking at the readme for `Online Data Table 11`, we can see that several covariates are fractions that should have a range of 0-1, with hard 0s or 1s also being extremely unlikely (for example in the case of obesity rates), so we can start by selecting those. 
+
+To acheive this I created a `Constraint` class that can be used to define constraints on a class of variable. The `ConstraintHolder` class is a container for such `Constraint` objects. `Constraint` objects hold a value and a comparison operator, and these parameters are later used to select columns that violate the specified constraint. Not every column that "violates" these constraints is necessarily bounded, but the results can be used as a starting point for manual inspection (we only have to scan through a few columns at a time).
+
+An alternative approach would be to use a statistical approach to identify outliers, based on distributional assumptions. However, the variables in the Chetty *et al* data are quite diverse, and there is no single distributional assumption that would be appropriate for all of them. Furthermore, there is no guarantee that values outwith the boundaries of permissible values are *per se* statistical outliers, so I think a manual approach is more appropriate here.
+
+## Instantiate constraints
+
+Since several covariates are fractions, I instantiate two `Constraint` objects, one for values less than or equal to 0, and one for values greater than or equal to 1. This will also exclude values *at* the boundaries, because I make the assumption that none of the counties are likely to score 0% or 100% in any fractional metric of interest.
+
+```{r}
+boundary_conditions <- ConstraintHolder$new("boundary_conditions")
+boundary_conditions$addConstraint(0, comparison = "<=", name = "upto_0")
+boundary_conditions$addConstraint(1, comparison = ">=", name = "over_1")
+```
+
+## Generate lists of potential columns to filter
+
+I made a `ColCheck`class to hold a method for selecting columns that violate a constraint, and storing the results. These are held in a `CCMetaClass`, which contains all `ColCheck`s generated for a given data set. Here, the `get_filter_containers()` function is used to generate a `CCMetaClass` for each data set, and the `getColCheck()` method is used to select the `ColCheck` for a given constraint. The `getPotentialCols()` method of `ColCheck` is used to return a list of columns that violate the constraint.
+
+```{r}
+cty_suspect_cols <- get_filter_containers(cty_covars, boundary_conditions)
+cz_suspect_cols <- get_filter_containers(cz_covars, boundary_conditions)
+
+
+cty_leq_0 <- cty_suspect_cols$getColCheck("upto_0")$getPotentialCols()
+cty_geq_1 <- cty_suspect_cols$getColCheck("over_1")$getPotentialCols()
+cz_leq_0 <- cz_suspect_cols$getColCheck("upto_0")$getPotentialCols()
+cz_geq_1 <- cz_suspect_cols$getColCheck("over_1")$getPotentialCols()
+
+```
+
+## Set up filters
+
+Having inspected the results of the above, I manually selected a subset of columns to filter. The `createColFilter()` method of `ColCheck` is used to generate a function that can be used to filter the data. The `pattern` argument is a regular expression that is used to select columns that match the pattern. The `filterNonMatches` argument is used to determine whether to filter columns that *do not* match the pattern. This is useful for the case when *most* columns need to be filtered and saves writing a very long regex; instead we can take the complement of the columns that look OK, and filter those.
+
+```{r}
+leq_0_not_NA <- cty_suspect_cols$getColCheck("upto_0")$createColFilter(
+    pattern = "tax|subcty_exp_pc|score_r|lf_d|pop_d|scap_ski|_z",
+    filterNonMatches = TRUE
+)
+
+greq_1_NA <- cz_suspect_cols$getColCheck("over_1")$createColFilter(
+    pattern = "gini|inc_share_1perc|cs00_|cur_smoke|bmi_obese|exercise"
+)
+
+filters <- list(leq_0_not_NA, greq_1_NA)
+```
+
+## Apply filters and imputed
+
+The `process_imputation()` function is used to apply the filters and impute the data. This function takes a data set, a list of filters, and a list of columns to keep. The filters are applied in sequence, and the columns to keep are added back in at the end. The `process_imputation()` function is quite opaque, and deals with a lot of the plumbing involved in imputation, to keep the main pipeline code clean. The `process_imputation()` function returns a data frame with the imputed values.
+
+```{r}
+cty_impute <- process_imputation(cty_covars, filters, cty_data, cty_non_imputed)
+cz_impute <- process_imputation(cz_covars, filters, cz_data, cz_non_imputed)
+```
+
+# Write out results
+
+```{r}
+outdir <- g("{dir}/data/derived_tables/temp")
+
+readr::write_csv(cty_impute, g("{outdir}/final_imputed_county.csv"))
+readr::write_csv(cz_impute, g("{outdir}/final_imputed_cz.csv"))
+```
