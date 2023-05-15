@@ -1,0 +1,81 @@
+﻿Variable name;Proposed name
+cty;County FIPS code
+county_name;County name
+cty_pop2000;County population in 2000
+cz;Commuting zone FIPS code
+cz_name;Commuting zone name
+cz_pop200;Commuting zone population in 2000
+state_id;State FIPS code
+stateabbrv;State abbreviation
+statename;State name
+region;Region
+le_agg_q1;Life expectancy in lowest income quartile
+le_agg_q2;Life expectancy in second lowest income quartile
+le_agg_q3;Life expectancy in second highest income quartile
+le_agg_q4;Life expectancy in highest income quartile
+sd_le_agg_q1;Standard deviation of life expectancy in lowest income quartile
+sd_le_agg_q2;Standard deviation of life expectancy in second lowest income quartile
+sd_le_agg_q3;Standard deviation of life expectancy in second highest income quartile
+sd_le_agg_q4;Standard deviation of life expectancy in highest income quartile
+cur_smoke_q1;Smoking rate in lowest income quartile
+cur_smoke_q2;Smoking rate in second lowest income quartile
+cur_smoke_q3;Smoking rate in second highest income quartile
+cur_smoke_q4;Smoking rate in highest income quartile
+bmi_obese_q1;Obesity rate in lowest income quartile
+bmi_obese_q2;Obesity rate in second lowest income quartile
+bmi_obese_q3;Obesity rate in second highest income quartile
+bmi_obese_q4;Obesity rate in highest income quartile
+exercise_any_q1;Exercise rate in lowest income quartile
+exercise_any_q2;Exercise rate in second lowest income quartile
+exercise_any_q3;Exercise rate in second highest income quartile
+exercise_any_q4;Exercise rate in highest income quartile
+puninsured2010;Percent uninsured in 2010
+reimb_penroll_adj10;Medicare spending per enrollee in 2010
+mort_30day_hosp_z;Hospital mortality rate index for 30 days
+adjmortmeas_amiall30day;Heart attack mortality rate for 30 days
+adjmortmeas_chfall30day;Heart failure mortality rate for 30 days
+adjmortmeas_pnall30day;Pneumonia mortality rate for 30 days
+med_prev_qual_z;Preventive care index for Medicare enrollees
+primcarevis_10;Percent with primary care visit in 2010
+diab_hemotest_10;Percent diabetic with hemoglobin test in 2010
+diab_eyeexam_10;Percent diabetic with eye exam in 2010
+diab_lipids_10;Percent diabetic with lipids test in 2010
+mammogram_10;Percent female with mammogram in 2010
+amb_disch_per1000_10;Discharges for ambulatory care per 1000 enrollees in 2010
+cs00_seg_inc;Income segregation index in 2000
+cs00_seg_inc_pov25;Segregation of poverty index in 2000
+cs00_seg_inc_aff75;Segregation of affluence index in 2000
+cs_race_theil_2000;Racial segregation index in 2000
+gini99;Gini index excluding top 1% share in 1999
+poor_share;Poverty rate in 2000
+inc_share_1perc;Top 1% income share in core sample from tax records
+frac_middleclass;Fraction middle class (between p25 and p75) from tax records
+scap_ski90pcm;Social capital index based on community participation measures
+rel_tot;Percent religious adherents
+cs_frac_black;Percent black population
+cs_frac_hisp;Percent Hispanic population
+unemp_rate;Unemployment rate
+pop_d_2000_1980;Percent change in population from 1980 to 2000
+lf_d_2000_1980;Percent change in labor force from 1980 to 2000
+cs_labforce;Labor force participation rate
+cs_elf_ind_man;Share working in manufacturing
+cs_born_foreign;Percent immigrants
+mig_inflow;Migration inflow rate
+mig_outflow;Migration outflow rate
+pop_density;Population density
+frac_traveltime_lt15;Fraction with commute less than 15 minutes
+intersects_msa;Urban area indicator
+hhinc00;Mean household income in 2000
+median_house_value;Median house value in 2000
+ccd_exp_tot;School expenditure per student
+ccd_pup_tch_ratio;Student teacher ratio
+score_r;Test score percentile (income adjusted)
+dropout_r;High school dropout rate (income adjusted)
+cs_educ_ba;Percent college graduates
+gradrate_r;College graduation rate (income adjusted)
+e_rank_b;Absolute upward mobility for bottom quartile
+cs_fam_wkidsinglemom;Fraction of children with single mothers
+crime_total;Total crime rate
+subcty_exp_pc;Local government expenditures per capita
+taxrate;Local tax rate
+tax_st_diff_top20;Tax progressivity index
