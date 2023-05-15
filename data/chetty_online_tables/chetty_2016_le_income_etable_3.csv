@@ -1,0 +1,54 @@
+﻿Variable;Definition;Source
+Smoking Rate in Corresponding Quartile;Fraction of respondents who report currently smoking in each income quartile of the pooled BRFSS sample over years 1996-2008;CDC Behavioral Risk Factor Surveillance System (BRFSS) 1996-20081
+Obesity Rate in Corresponding Quartile;Fraction of respondents who are obese (BMI≥30) in each income quartile of the pooled BRFSS sample over years 1996-2008;CDC Behavioral Risk Factor Surveillance System (BRFSS) 1996-2008
+Exercise Rate in Corresponding Quartile;Fraction of respondents who have exercised in the past 30 days in each income quartile of the pooled BRFSS sample over years 1996-2008;CDC Behavioral Risk Factor Surveillance System (BRFSS) 1996-2008
+% Uninsured;County-level estimates of the fraction of the population without health insurance in 2010;2010 Small Area Health Insurance Estimates2
+Medicare $ per Enrollee;Age, sex, race, and price-adjusted Medicare reimbursements per enrollee in 2010 ($);Dartmouth Atlas 20103
+30-day Mortality for Heart Attacks;30-day mortality rates for heart attack (acute myocardial infarction) patients;Joynt et al. (2014)4
+30-day Mortality for Pneumonia;30-day mortality rates for pneumonia patients;Joynt et al. (2014)
+30-day Mortality for Heart Failure;30-day mortality rates for heart failure patients;Joynt et al. (2014)
+30-day Hospital Mortality Rate Index;Standardized index combining 30-day mortality rates for heart attack, heart failure, and pneumonia patients;
+% with at least 1 Primary Care Visit;Average annual percentage of Medicare enrollees with at least one ambulatory visit to a primary care physician;Dartmouth Atlas 20105
+% Diabetic with Hemoglobin Test;Average annual percentage of diabetic Medicare enrollees ages 65-75 with a hemoglobin A1c test;Dartmouth Atlas 2010
+% Diabetic with Eye Exam;Average annual percentage of diabetic Medicare enrollees ages 65-75 with an eye examination;Dartmouth Atlas 2010
+% Diabetic with Lipids Test;Average annual percentage of diabetic Medicare enrollees ages 65-75 with a blood lipids (LDL-C) test;Dartmouth Atlas 2010
+% Female Ages 67-69 with Mammogram;Average annual percentage of female Medicare enrollees ages 67-69 with at least one mammogram over a two-year period;Dartmouth Atlas 2010
+Discharges for Ambulatory Care Sensitive Conditions;Discharges for ambulatory care sensitive conditions per 1,000 Medicare enrollees;Dartmouth Atlas 2010
+Index for Preventive Care;Standardized index combining measures of primary care visits, hemoglobin tests, eye exams, and lipids tests among diabetics, mammograms among females ages 67-69, and discharges for ambulatory care;
+Segregation;"Income Segregation: Rank-Order index estimated at the census-tract level using equation (13) in Reardon (2011); the δ vector is given in Appendix A4 of Reardon's paper. H(pk) is computed for each of the income brackets given in the 2000 census. See Appendix D of Chetty et al. (2014) for further details.";2000 Census SF3 Sample Data Table P052
+Segregation of Poverty (<p25);"H(p25) estimated following Reardon (2011); we compute H(p) for 16 income groups defined by the 2000 census. We estimate H(p25) using a fourth-order polynomial of the weighted linear regression in equation (12) of Reardon (2011).";2000 Census SF3 Sample Data Table P052
+Segregation of Affluence (>p75);Same definition as segregation of poverty, but using p75 instead of p25;2000 Census SF3 Sample Data Table P052
+Racial Segregation;Multi-group Theil Index calculated at the census-tract level over four groups: White alone, Black alone, Hispanic, and Other;2000 Census SF1 100% Data Table P008
+Gini Index (Within Bottom 99%);Gini coefficient minus top 1% income share;Tax Records, Core Sample, Chetty et al. (2014)
+Poverty Rate;Fraction of population below the poverty line;2000 Census SF3 Sample Data Table P087
+Top 1% Income Share;The percentage of income within a CZ going to the top 1% defined within the CZ, computed using parents of children in the Chetty et al. (2014) core sample;Tax Records, Core Sample, Chetty et al. (2014)
+Fraction Middle Class (between p25 and p75);Fraction of parents in the Chetty et al. (2014) core sample whose income falls between the 25th and 75th percentile of the national parent income distribution;Tax Records, Core Sample, Chetty et al. (2014)
+Index for Social Capital;Standardized index combining measures of voter turnout rates, the fraction of people who return their census forms, and measures of participation in community organizations;Rupasingha and Goetz (2008)
+% Religious;Fraction of religious adherents;2000 Association of Religion Data Archives
+% Black;Number of individuals who are black alone divided by total population;2000 Census SF1 100% Data Table P008
+% Hispanic;Number of individuals who are Hispanic divided by total population;2000 Census SF1 100% Data Table P008
+Unemployment Rate;Unemployed civilian population 16 years and over divided by civilian labor force population 16 years and older;2000 Census SF3 Sample Data Table DP-310
+% Change in Population, 1980-2000;Fraction change in CZ non-institutional civilian population from 1980 to 2000;1980, 2000 Census
+% Change in Labor Force, 1980-2000;Fraction change in CZ civilian labor force population from 1980 to 2000;1980, 2000 Census
+Labor Force Participation;Fraction of people at least 16 years old that are in the labor force;2000 Census SF3 Sample Data Table P043
+Share Working in Manufacturing;Fraction of employed persons 16 and older working in manufacturing;2000 Census SF3 Sample Data Table P049
+% Immigrants;Fraction of CZ residents born outside the United States;2000 Census SF3 Sample Data Table P021
+Migration Inflow Rate;Migration into the CZ from other CZs (divided by CZ population from 2000 Census);IRS Statistics of Income 2004-2005
+Migration Outflow Rate;Migration out of the CZ from other CZs (divided by CZ population from 2000 Census);IRS Statistics of Income 2004-2005
+Population Density;Population divided by the land area in square miles;2000 Census Gazetteer Files
+Fraction with Commute < 15 Mins;Number of workers that commute less than 15 minutes to work divided by total number of workers. Sample restricted to workers that are 16 or older and not working at home.;2000 Census SF3 Sample Data Table P031
+Mean Household Income;Aggregate household income in the 2000 Census divided by the number of people aged 16-64 ($);2000 Census SF3 Sample Data Table P054
+Median House Value;Median value of housing units at the county level (population-weighted to CZ level for CZ covariate) ($);2000 Census SF3a
+School Expenditure per Student;Average expenditures per student in public schools;NCES CCD 1996-1997 Financial Survey
+Student Teacher Ratio;Average student-teacher ratio in public schools;NCES CCD 1996-1997 Universe Survey
+Test Score Percentile (income adjusted);Residual from a regression of mean math and English standardized test scores on household income per capita in 2000;George Bush Global Report Card
+High School Dropout Rate (income adjusted);Residual from a regression of high school dropout rates on household income per capita in 2000. Coded as missing for CZs in which dropout rates are missing for more than 25% of school districts.;NCES CCD 2000-2001
+% College Grads;Percentage of people at least 25 years old that have a bachelors degree;2000 Census SF3 Sample Data Table DP-2
+College Tuition;Mean in-state tuition and fees for first-time, full-time undergraduates ($);IPEDS 2000
+College Graduation Rate (income adjusted);Residual from a regression of graduation rate (the share of undergraduate students that complete their degree in 150% of normal time) on household income per capita in 2000;IPEDS 2009
+Absolute Upward Mobility;Expected income rank of child born to parents at 25th Percentile;Tax Records, Core Sample, Chetty et al. (2014)
+Fraction of Children with Single Mothers;Number of single female households with children divided by total number of households with children;2000 Census SF3 Sample Data Table P015
+Total Crime Rate;Per capita crime rate;2000 Uniform Crime Reports
+Local Gov. Expenditures;Total local government expenditures per capita ($);1992 Census of Government county-level summaries
+Local Tax Rate;Total tax revenue per capita divided by mean household income per capita for working age adults (in 1990);1992 Census of Government county-level summaries
+Tax Progressivity;The difference between the top state income tax rate and the state income tax rate for individuals with taxable income of $20,000 in 2008;2008 state income tax rates from the Tax Foundation
