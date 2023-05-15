@@ -11,3 +11,6 @@ code/summarise_tables.r
 .Rhistory
 *_DEPRECATED.r
 *temp/
+.Rproj.user
+code/streamlitapp
+.venv
