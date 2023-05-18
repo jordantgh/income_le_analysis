@@ -1,11 +1,6 @@
 box::use(
-    . / cleanup_functions[...],
     dplyr[...],
-    purrr[keep, map, pmap_dfc],
-    utils[head, tail],
-    stats[sd, lm],
-    mice[md.pattern, mice, complete],
-    tibble[as_tibble]
+    ./cleanup_functions[...]
 )
 
 ConstraintHolder <- R6::R6Class(
