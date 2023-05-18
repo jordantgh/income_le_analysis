@@ -6,9 +6,15 @@ author: |
 output: html_document
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, purl=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 source("../../../.Rprofile")
+
+knitr::purl(
+    input = "code/county/process_tables/run_pipeline.rmd",
+    output = "code/county/process_tables/pipelinescript.r",
+    documentation = 0
+)
 ```
 
 # Import libraries and functions
@@ -142,7 +148,6 @@ cty_leq_0 <- cty_suspect_cols$getColCheck("upto_0")$getPotentialCols()
 cty_geq_1 <- cty_suspect_cols$getColCheck("over_1")$getPotentialCols()
 cz_leq_0 <- cz_suspect_cols$getColCheck("upto_0")$getPotentialCols()
 cz_geq_1 <- cz_suspect_cols$getColCheck("over_1")$getPotentialCols()
-
 ```
 
 ## Set up filters
