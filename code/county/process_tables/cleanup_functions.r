@@ -1,7 +1,12 @@
 box::use(
     dplyr[...],
-    purrr[...],
-    glue[g = glue]
+    purrr[keep, map, pmap_dfc],
+    glue[g = glue],
+    utils[head, tail],
+    stats[sd, lm],
+    mice[md.pattern, mice, complete],
+    tibble[as_tibble],
+    ./classes[...]
 )
 
 # Function for selecting and cleaning the joined table
