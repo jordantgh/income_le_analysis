@@ -15,10 +15,14 @@ box::use(
 )
 
 dir <- g("{getOption('project_root')}")
+
 df_cty <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_county.csv"))
 df_cz <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_cz.csv"))
 
-us_counties <- st_read(g("{dir}/data/external_data/shapefiles/county/co99_d00.shp"))
+us_counties <- st_read(
+    g("{dir}/data/external_data/shapefiles/county/co99_d00.shp")
+)
+
 us_cz <- st_read(g("{dir}/data/external_data/shapefiles/cz/cz1990.shp"))
 
 us_counties <- us_counties %>%
