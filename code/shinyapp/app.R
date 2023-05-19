@@ -2,7 +2,6 @@ box::use(
     shiny[...],
     shinydashboard[...],
     shinyWidgets[...],
-    shinyjs[...],
     ggplot2[...],
     readr[...],
     leaflet[...],
@@ -18,6 +17,15 @@ dir <- g("{getOption('project_root')}")
 
 df_cty <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_county.csv"))
 df_cz <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_cz.csv"))
+
+df_alt_names <- read_csv(
+    g("{dir}/data/derived_tables/chetty_2016_covariate_names.csv")
+)
+
+alt_names_list <- setNames(
+    df_alt_names$`Variable name`,
+    df_alt_names$`Proposed name`
+)
 
 us_counties <- st_read(
     g("{dir}/data/external_data/shapefiles/county/co99_d00.shp")
@@ -47,38 +55,37 @@ sidebar <- dashboardSidebar(
             selectInput(
                 inputId = "x_var",
                 label = "X Variable:",
-                choices = names(df_cty[, -c(1:11, 75)]),
+                choices = alt_names_list,
                 selected = "cur_smoke_q1"
             ),
             selectInput(
                 inputId = "y_var",
                 label = "Y Variable:",
-                choices = names(df_cty[, -c(1:11, 75)]),
+                choices = alt_names_list,
                 selected = "le_agg_q1"
             ),
             prettyRadioButtons(
                 inputId = "level",
                 label = "Level:",
-                choices = c(
-                    "cz",
-                    "county_name"
-                ),
-                selected = "cz",
+                choices = alt_names_list[grep(
+                    "Commuting zone$|County$", names(alt_names_list)
+                )],
+                selected = "cz_name",
                 shape = "round",
                 bigger = TRUE,
                 status = "primary"
             ),
-            prettyRadioButtons(
-                inputId = "group_var",
-                label = "Grouping Variable:",
-                choices = c(
-                    "Region",
-                    "intersects_msa"
-                ),
-                selected = "Region",
-                shape = "round",
-                bigger = TRUE,
-                status = "primary"
+            conditionalPanel(
+                condition = "input.level == 'county_name'",
+                prettyRadioButtons(
+                    inputId = "group_var",
+                    label = "Grouping Variable:",
+                    choices = c("Region", "intersects_msa"),
+                    selected = "Region",
+                    shape = "round",
+                    bigger = TRUE,
+                    status = "primary"
+                )
             )
         )
     )
@@ -91,41 +98,41 @@ body <- dashboardBody(
     tabItems(
         tabItem(
             tabName = "dashboard",
-            fluidRow(
-                column(
-                    width = 12,
-                    box(
-                        plotOutput("scatterPlot",
-                            height = "100%",
-                            width = "100%"
-                        ),
-                        width = 12
-                    )
+            div(
+                id = "dashboard-grid",
+                box(
+                    plotOutput("scatterPlot",
+                        height = "100%",
+                        width = "100%"
+                    ),
+                    width = 12
                 ),
-                column(
-                    width = 12,
-                    box(
-                        plotOutput("barChart",
-                            height = "100%",
-                            width = "100%"
-                        ),
-                        width = 12
-                    )
+                box(
+                    plotOutput("barChart",
+                        height = "100%",
+                        width = "100%"
+                    ),
+                    width = 12
                 ),
-                column(
-                    width = 12,
-                    box(
-                        leafletOutput("map",
-                            height = "100%",
-                            width = "100%"
-                        ),
-                        width = 12
-                    )
+                box(
+                    plotOutput("kernelDensity",
+                        height = "100%",
+                        width = "100%"
+                    ),
+                    width = 12
+                ),
+                box(
+                    leafletOutput("map",
+                        height = "100%",
+                        width = "100%"
+                    ),
+                    width = 12
                 )
             )
         )
     )
 )
+
 
 ui <- dashboardPage(header, sidebar, body, skin = "black")
 
@@ -133,7 +140,7 @@ server <- function(input, output) {
     selected_data <- reactive({
         if (input$level == "county_name") {
             return(df_cty)
-        } else if (input$level == "cz") {
+        } else if (input$level == "cz_name") {
             return(df_cz)
         }
     })
@@ -143,27 +150,49 @@ server <- function(input, output) {
             selected_data(),
             aes(x = !!sym(input$x_var), y = !!sym(input$y_var))
         ) +
-            geom_point(aes(color = !!sym(input$group_var)))
+            geom_point(aes(color = !!sym(
+                if (input$level == "county_name") input$group_var else "Region"
+            )))
     })
 
     output$barChart <- renderPlot({
         ggplot(
-            selected_data()[!is.na(selected_data()[[input$group_var]]), ],
+            selected_data()[!is.na(selected_data()[[if (input$level == "county_name") input$group_var else "Region"]]), ],
             aes(
-                x = !!sym(input$group_var),
+                x = !!sym(
+                    if (input$level == "county_name") input$group_var else "Region"
+                ),
                 y = !!sym(input$y_var),
-                group = !!sym(input$group_var)
+                group = !!sym(
+                    if (input$level == "county_name") input$group_var else "Region"
+                )
             )
         ) +
             geom_violin() +
-            geom_beeswarm(aes(color = !!sym(input$group_var))) +
+            geom_beeswarm(aes(color = !!sym(
+                if (input$level == "county_name") input$group_var else "Region"
+            ))) +
             labs(x = "Region", y = "Current Smoking Rate (q1)")
     })
+
+
+    output$kernelDensity <- renderPlot({
+        ggplot(
+            selected_data()[!is.na(selected_data()), ]
+        ) +
+            geom_density(aes(
+                x = scale(!!sym(input$x_var))
+            ), color = "green") + # added population weights
+            geom_density(aes(
+                x = scale(!!sym(input$y_var))
+            ), color = "red") # added population weights
+    })
+
 
     color_scale <- reactive({
         colorNumeric(
             palette = "viridis",
-            domain = selected_data()[[input$y_var]]
+            domain = scale(selected_data()[[input$y_var]])
         )
     })
 
@@ -171,9 +200,9 @@ server <- function(input, output) {
         df_geo <- selected_data()
         leaflet(df_geo) %>%
             addProviderTiles("CartoDB.Positron") %>%
-            setView(lng = -95.583333, lat = 37.833333, zoom = 4) %>%
+            setView(lng = -95.583333, lat = 37.833333, zoom = 3) %>%
             addPolygons(
-                fillColor = color_scale()(df_geo[[input$y_var]]),
+                fillColor = color_scale()(scale(df_geo[[input$y_var]])),
                 fillOpacity = 0.8,
                 color = "#BDBDC3",
                 weight = 1,
@@ -192,7 +221,7 @@ server <- function(input, output) {
             ) %>%
             addLegend(
                 pal = color_scale(),
-                values = df_geo[[input$y_var]],
+                values = scale(df_geo[[input$y_var]]),
                 title = "Y Variable Value",
                 position = "bottomright",
                 labFormat = labelFormat(suffix = ""),
@@ -201,5 +230,4 @@ server <- function(input, output) {
     })
 }
 
-shinyApp(ui = ui, server = server) %>%
-    shiny::runApp(port = 3838)
+shinyApp(ui = ui, server = server)
