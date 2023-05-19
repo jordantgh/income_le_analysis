@@ -16,7 +16,5 @@ RUN apt-get update && apt-get install -y \
 
 EXPOSE 3838
 
-ENV NAME income_le_analysis
-
 # Run the shiny app when the container launches
-CMD ["R", "--slave", "-e", "shiny::runApp('code/shinyapp/shiny.r', port = 3838, host = '0.0.0.0')"]
+CMD ["R", "--slave", "-e", "shiny::runApp('code/shinyapp/app.R', port = 3838, host = '0.0.0.0')"]

@@ -5,15 +5,24 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.box {
+.box.box-solid.box-primary {
+    border-radius: 17px;
+}
+
+#dashboard-grid .col-sm-12 {
     border-radius: 17px;
     border: 1px solid #ddd;
     background-color: #ffffff;
-    margin-bottom: 20px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 100%;
+    width: 600px;
     height: 500px;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+}
+
+.box {
+    height: 100%;
 }
 
 .box-body {
@@ -29,10 +38,11 @@ body {
 }
 
 .shiny-input-radiogroup span {
-    color: black
+    color: black;
 }
 
-.skin-black .sidebar-menu>li.active>a, .skin-black .sidebar-menu>li:hover>a {
+.skin-black .sidebar-menu>li.active>a,
+.skin-black .sidebar-menu>li:hover>a {
     color: #fff;
     background: #1e282c;
     border-left-color: #1e282c;
@@ -43,8 +53,43 @@ body {
     font-weight: bold;
 }
 
-.col-sm-12 {
+#dashboard-grid {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    max-width: 1740px;  /* Maximum width of the grid */
+    margin: 50px auto;  /* Center the grid */
+}
+
+
+@media (max-width: 1240px) { /* switch to single column when the window is too small for two boxes */
+    #dashboard-grid .col-sm-12 {
+        width: 100%; /* full width */
+    }
+}
+
+@media (max-width: 600px) { /* start to shrink boxes when the window gets even smaller */
+    #dashboard-grid .col-sm-12 {
+        height: 300px;
+    }
+}
+
+/* Dropdown */
+.selectize-input.items.full.has-options.has-items {
+    width: 160px;
+}
+
+.selectize-input > .item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+.selectize-dropdown .option {
+    word-wrap: break-word;
+    max-width: 90%;
+}
+
+.selectize-input.items.full.has-options.has-items > input[type="text"] {
+    position: absolute;
 }
