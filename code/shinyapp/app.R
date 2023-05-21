@@ -13,7 +13,7 @@ box::use(
     glue[g = glue]
 )
 
-dir <- g("{getOption('project_root')}")
+dir <- here::here()
 
 df_cty <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_county.csv"))
 df_cz <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_cz.csv"))

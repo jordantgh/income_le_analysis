@@ -5,7 +5,7 @@ box::use(
     glue[g = glue]
 )
 
-dir <- g("{getOption('project_root')}/data/external_data/industry")
+dir <- g("{here::here()}/data/external_data/industry")
 fname <- "cbp01co"
 
 county_data <- read_csv(g("{dir}/{fname}.txt"))

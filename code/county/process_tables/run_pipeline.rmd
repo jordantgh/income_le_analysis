@@ -45,7 +45,7 @@ box::use(
 I next bring in the data, currently stored in a SQLite database. This is overengineered for the current case since the data can easily all fit in memory, but doing things this way makes the project far more scalable. The queries are a bit verbose, so they are wrapped in functions stored in a separate file, `queries.r`, which is imported above. Note the use of a custom `option` variable, `project_root`, which is set in the `.Rprofile` file in the project root directory. I prefer this approach to relying on relative paths, which break as soon as you move from the project root directory in your execution environment. In the imports I alias the `glue` function for string interpolation to `g` for brevity (I am inspired here by f string literals in Python).
 
 ```{r}
-dir <- getOption("project_root")
+dir <- here::here()
 db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
 cty_le_agg <- get_cty_le_agg(db)
