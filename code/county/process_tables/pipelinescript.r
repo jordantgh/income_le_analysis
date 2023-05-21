@@ -15,7 +15,7 @@ box::use(
     ./code/county/process_tables/classes[...]
 )
 
-dir <- getOption("project_root")
+dir <- here::here()
 db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
 cty_le_agg <- get_cty_le_agg(db)
