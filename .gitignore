@@ -7,3 +7,4 @@ code/summarise_tables.r
 # *.sqlite - to allow docker build; will be re-added once datagen scripts are in docker
 *_DEPRECATED.r
 # *temp/ - to allow docker build; will be re-added once datagen scripts are in docker
+*.html
