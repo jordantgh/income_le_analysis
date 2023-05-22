@@ -7,7 +7,6 @@ box::use(
     RSQLite[SQLite]
 )
 
-dir <- g("{here::here()}/data/external_data/industry")
 db_file <- g("{here::here()}/income_le.sqlite")
 
 county_data <- dbConnect(SQLite(), db_file) %>%
@@ -42,9 +41,15 @@ dominant_industry <- top_level_industries %>%
     top_n(1, emp) %>%
     ungroup()
 
-naics_descriptions <- read_csv(g("{dir}/naics_codes_1998_to_2002.csv")) %>%
-    select(Description, NAICS_Code) %>%
-    rename(naics = NAICS_Code, description = Description)
+naics_descriptions <- dbConnect(SQLite(), db_file) %>%
+    dbGetQuery("
+    SELECT
+
+    NAICS_Code as naics,
+    Description as description
+
+    FROM naics_codes_1998_to_2002;"
+    )
 
 # remove the "ranges" (e.g. "31-33") from the naics column
 naics_clean <- naics_descriptions[-1, ] %>%
