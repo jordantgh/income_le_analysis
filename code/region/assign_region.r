@@ -5,7 +5,7 @@ box::use(
     glue[g = glue]
 )
 
-dir <- g("{getOption('project_root')}/data")
+dir <- g("{here::here()}/data")
 
 add_region <- function(xwalk) {
     # Define the mapping of state abbreviations to regions

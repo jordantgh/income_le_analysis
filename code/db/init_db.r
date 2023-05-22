@@ -27,7 +27,7 @@ import_csv_to_sqlite <- function(file_path, con) {
 db_path <- "income_le.sqlite"
 con <- dbConnect(SQLite(), db_path)
 
-file_paths <- get_csv_files(g("{getOption('project_root')}/data/"))
+file_paths <- get_csv_files(g("{here::here()}/data/"))
 
 for (file_path in file_paths) {
   import_csv_to_sqlite(file_path, con)
