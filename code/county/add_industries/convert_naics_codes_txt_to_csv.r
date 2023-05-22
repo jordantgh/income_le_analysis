@@ -1,6 +1,8 @@
 box::use(
   utils[read.delim, write.csv],
-  glue[g = glue]
+  glue[g = glue],
+  DBI[dbConnect, dbWriteTable, dbExistsTable, dbDisconnect],
+  RSQLite[SQLite]
 )
 
 dir <- g("{here::here()}/data/external_data/industry")
@@ -15,4 +17,13 @@ data <- read.delim(g("{dir}/{fname}.tsv"),
   col.names = c("NAICS_Code", "Description")
 )
 
-write.csv(data, g("{dir}/{fname}.csv"), row.names = FALSE)
+db_file <- g("{here::here()}/income_le.sqlite")
+
+db <- dbConnect(SQLite(), db_file)
+if (!dbExistsTable(db, fname)) {
+  dbWriteTable(db, fname, data)
+  dbDisconnect(db)
+} else {
+  cat(g("Table {fname} already exists in the database. Skipping import.\n")) # nolint
+  dbDisconnect(db)
+}
