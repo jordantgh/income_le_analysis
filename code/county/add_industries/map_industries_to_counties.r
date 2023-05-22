@@ -2,15 +2,25 @@ box::use(
     dplyr[...],
     readr[...],
     tidyr[...],
-    glue[g = glue]
+    glue[g = glue],
+    DBI[...],
+    RSQLite[SQLite]
 )
 
 dir <- g("{here::here()}/data/external_data/industry")
-fname <- "cbp01co"
+db_file <- g("{dir}/income_le.sqlite")
 
-county_data <- read_csv(g("{dir}/{fname}.txt"))
-# candidate for sql db?
-county_data <- county_data %>% select(fipstate, fipscty, naics, emp)
+county_data <- dbConnect(SQLite(), db_file) %>%
+    dbGetQuery("
+    SELECT
+
+    fipstate,
+    fipscty,
+    naics,
+    emp
+
+    FROM complete_county_industries_2001;"
+    )
 
 # Filter to top level industries
 top_level_industries <- county_data %>%
