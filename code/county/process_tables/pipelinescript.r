@@ -100,7 +100,12 @@ filters <- list(leq_0_not_NA, greq_1_NA)
 cty_impute <- process_imputation(cty_covars, filters, cty_data, cty_non_imputed)
 cz_impute <- process_imputation(cz_covars, filters, cz_data, cz_non_imputed)
 
-outdir <- g("{dir}/data/derived_tables/temp")
+# Reconnect to the SQLite database
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
-readr::write_csv(cty_impute, g("{outdir}/final_imputed_county.csv"))
-readr::write_csv(cz_impute, g("{outdir}/final_imputed_cz.csv"))
+# Write tables to SQLite database
+dbWriteTable(db, "final_imputed_county", cty_impute)
+dbWriteTable(db, "final_imputed_cz", cz_impute)
+
+# Close the SQLite database connection
+dbDisconnect(db)
