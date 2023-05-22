@@ -8,7 +8,7 @@ box::use(
 )
 
 dir <- g("{here::here()}/data/external_data/industry")
-db_file <- g("{dir}/income_le.sqlite")
+db_file <- g("{here::here()}/income_le.sqlite")
 
 county_data <- dbConnect(SQLite(), db_file) %>%
     dbGetQuery("
