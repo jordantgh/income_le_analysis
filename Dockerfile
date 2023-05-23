@@ -10,11 +10,15 @@ RUN apt-get update && apt-get install -y \
     libgdal-dev \
     libssl-dev \
     libudunits2-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && Rscript --no-init-file -e 'source("requirements.r")' \
-    && Rscript -e 'source("code/county/process_tables/pipelinescript.r")'
+    && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 3838
+RUN Rscript --no-init-file -e 'source("requirements.r")'
+
+RUN Rscript -e 'source("code/init.r")'
+
+RUN Rscript -e 'source("code/process_tables/pipelinescript.r")'
+
+EXPOSE 3832
 
 # Run the shiny app when the container launches
-CMD ["R", "--slave", "-e", "shiny::runApp('code/shinyapp/app.R', port = 3838, host = '0.0.0.0')"]
+CMD ["R", "--slave", "-e", "shiny::runApp('code/shinyapp/app.r', port = 3832, host = '0.0.0.0')"]
