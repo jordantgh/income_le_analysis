@@ -1,18 +1,30 @@
 box::use(
-    dplyr[...],
-    readr[...],
-    glue[g = glue]
+  DBI[dbConnect, dbReadTable, dbWriteTable, dbDisconnect],
+  RSQLite[SQLite],
+  magrittr[`%>%`],
+  dplyr[select, left_join],
+  glue[g = glue]
 )
 
-dir <- g("{here::here()}/data")
-covariates <- read_csv(g("{dir}/chetty_online_tables/county/t12_countCovariates.csv")) # nolint
+# create a connection
+db <- dbConnect(SQLite(), g("{here::here()}/income_le.sqlite"))
 
-industries <- read_csv(g("{dir}/derived_tables/county/county_dominant_industries_2001.csv")) # nolint
+# load tables from the SQLite db
+covariates <- dbReadTable(db, "t12_countCovariates")
+industries <- dbReadTable(db, "county_dominant_industries_2001")
 
 # remove nonessential columns from industries
 industries <- industries %>%
-    select(-industry_naics_code)
+  select(-industry_naics_code)
 
 covariates <- left_join(covariates, industries, by = "cty")
 
-write_csv(covariates, g("{dir}/derived_tables/county/countyCovariates_with_industries.csv")) # nolint
+# write the final table to the SQLite db
+dbWriteTable(db,
+  "countyCovariates_with_industries",
+  covariates,
+  overwrite = TRUE
+)
+
+# close the connection
+dbDisconnect(db)

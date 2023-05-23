@@ -2,6 +2,8 @@ box::use(
     shiny[...],
     shinydashboard[...],
     shinyWidgets[...],
+    DBI[...],
+    RSQLite[SQLite],
     ggplot2[...],
     readr[...],
     leaflet[...],
@@ -15,8 +17,15 @@ box::use(
 
 dir <- here::here()
 
-df_cty <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_county.csv"))
-df_cz <- read_csv(g("{dir}/data/derived_tables/temp/final_imputed_cz.csv"))
+# Establish a connection to the SQLite database
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
+
+# Read tables from the SQLite database
+df_cty <- dbReadTable(db, "final_imputed_county")
+df_cz <- dbReadTable(db, "final_imputed_cz")
+
+# Disconnect from the SQLite database
+dbDisconnect(db)
 
 df_alt_names <- read_csv(
     g("{dir}/data/derived_tables/chetty_2016_covariate_names.csv")

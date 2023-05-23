@@ -8,9 +8,9 @@ box::use(
 )
 
 db_file <- g("{here::here()}/income_le.sqlite")
+db <- dbConnect(SQLite(), db_file)
 
-county_data <- dbConnect(SQLite(), db_file) %>%
-    dbGetQuery("
+county_data <- dbGetQuery(db, "
     SELECT
 
     fipstate,
@@ -18,8 +18,7 @@ county_data <- dbConnect(SQLite(), db_file) %>%
     naics,
     emp
 
-    FROM complete_county_industries_2001;"
-    )
+    FROM complete_county_industries_2001;")
 
 # Filter to top level industries
 top_level_industries <- county_data %>%
@@ -41,15 +40,13 @@ dominant_industry <- top_level_industries %>%
     top_n(1, emp) %>%
     ungroup()
 
-naics_descriptions <- dbConnect(SQLite(), db_file) %>%
-    dbGetQuery("
+naics_descriptions <- dbGetQuery(db, "
     SELECT
 
     NAICS_Code as naics,
     Description as description
 
-    FROM naics_codes_1998_to_2002;"
-    )
+    FROM naics_codes_1998_to_2002;")
 
 # remove the "ranges" (e.g. "31-33") from the naics column
 naics_clean <- naics_descriptions[-1, ] %>%
@@ -87,21 +84,31 @@ top_level_industries <- left_join(top_level_industries,
 
 # concatenate the state and county fips (to match Chetty tables)
 dominant_industry <- dominant_industry %>%
-    mutate(cty = g("{fipstate}{fipscty}"), .before = top_industry) %>%
+    mutate(
+        cty = as.numeric(g("{fipstate}{fipscty}")),
+        .before = top_industry
+    ) %>%
     select(-fipstate, -fipscty)
 
 top_level_industries <- top_level_industries %>%
-    mutate(cty = g("{fipstate}{fipscty}"), .before = industry) %>%
+    mutate(
+        cty = as.numeric(g("{fipstate}{fipscty}")),
+        .before = industry
+    ) %>%
     select(-fipstate, -fipscty)
 
-# save
-derived_dir <- "data/derived_tables/county"
-
-write_csv(
+dbWriteTable(
+    db,
+    "county_dominant_industries_2001",
     dominant_industry,
-    g("{derived_dir}/county_dominant_industries_2001.csv")
+    overwrite = FALSE
 )
-write_csv(
+
+dbWriteTable(
+    db,
+    "county_toplevel_industries_2001",
     top_level_industries,
-    g("{derived_dir}/county_top_industries_2001.csv")
+    overwrite = FALSE
 )
+
+dbDisconnect(db)

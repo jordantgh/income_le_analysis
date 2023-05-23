@@ -2,10 +2,12 @@ box::use(
     readr[read_csv, write_csv],
     magrittr[`%>%`],
     dplyr[mutate],
+    DBI[dbConnect, dbWriteTable, dbExistsTable, dbDisconnect],
+    RSQLite[SQLite],
     glue[g = glue]
 )
 
-dir <- g("{here::here()}/data")
+dir <- g("{here::here()}")
 
 add_region <- function(xwalk) {
     # Define the mapping of state abbreviations to regions
@@ -39,9 +41,10 @@ add_region <- function(xwalk) {
         mutate(Region = sapply(stateabbrv, state_to_region))
 }
 
-xwalk <- read_csv(g("{dir}/chetty_online_tables/cty_cz_st_crosswalk.csv"))
-region_xwalk <- add_region(xwalk)
-write_csv(
-    region_xwalk,
-    g("{dir}/derived_tables/cty_cz_st_crosswalk_with_region.csv")
-)
+# Import as a table in the SQLite database instead
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
+dbReadTable(db, "cty_cz_st_crosswalk") %>%
+    add_region() %>%
+    dbWriteTable(db, "cty_cz_st_crosswalk_with_region", overwrite = FALSE)
+
+dbDisconnect(db)

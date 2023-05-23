@@ -8,7 +8,6 @@ output: html_document
 
 ```{r, echo=FALSE, purl=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("../../../.Rprofile")
 
 knitr::purl(
     input = "code/county/process_tables/run_pipeline.rmd",
@@ -23,7 +22,7 @@ I use the `box` package to import libraries and functions. This is a cool librar
 
 ```{r}
 box::use(
-    DBI[dbConnect, dbGetQuery, dbDisconnect],
+    DBI[dbConnect, dbGetQuery, dbWriteTable, dbDisconnect],
     RSQLite[SQLite],
     glue[g = glue],
     ggplot2[...],
@@ -34,9 +33,9 @@ box::use(
     mice[md.pattern, mice, complete],
     tibble[as_tibble],
     rlang[parse_expr],
-    code / county / process_tables / queries[...],
-    code / county / process_tables / cleanup_functions[...],
-    code / county / process_tables / classes[...]
+    ./code/county/process_tables/queries[...],
+    ./code/county/process_tables/cleanup_functions[...],
+    ./code/county/process_tables/classes[...]
 )
 ```
 
@@ -80,7 +79,6 @@ cty_unwanted <- c(
     "csa_name",
     "cbsa",
     "cbsa_name",
-    "naics",
     "tuition"
 )
 
@@ -95,7 +93,8 @@ cty_non_imputed <- c(
     "statename",
     "Region",
     "intersects_msa",
-    "description"
+    "top_industry",
+    "top_industry_employment"
 )
 
 cty_covars <- cty_data %>% StripCols(c(cty_unwanted, cty_non_imputed))
@@ -179,8 +178,10 @@ cz_impute <- process_imputation(cz_covars, filters, cz_data, cz_non_imputed)
 # Write out results
 
 ```{r}
-outdir <- g("{dir}/data/derived_tables/temp")
+db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
-readr::write_csv(cty_impute, g("{outdir}/final_imputed_county.csv"))
-readr::write_csv(cz_impute, g("{outdir}/final_imputed_cz.csv"))
+dbWriteTable(db, "final_imputed_county", cty_impute)
+dbWriteTable(db, "final_imputed_cz", cz_impute)
+
+dbDisconnect(db)
 ```

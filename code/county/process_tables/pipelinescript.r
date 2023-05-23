@@ -1,5 +1,5 @@
 box::use(
-    DBI[dbConnect, dbGetQuery, dbDisconnect],
+    DBI[dbConnect, dbGetQuery, dbWriteTable, dbDisconnect],
     RSQLite[SQLite],
     glue[g = glue],
     ggplot2[...],
@@ -38,7 +38,6 @@ cty_unwanted <- c(
     "csa_name",
     "cbsa",
     "cbsa_name",
-    "naics",
     "tuition"
 )
 
@@ -53,7 +52,8 @@ cty_non_imputed <- c(
     "statename",
     "Region",
     "intersects_msa",
-    "description"
+    "top_industry",
+    "top_industry_employment"
 )
 
 cty_covars <- cty_data %>% StripCols(c(cty_unwanted, cty_non_imputed))
@@ -85,7 +85,6 @@ cty_geq_1 <- cty_suspect_cols$getColCheck("over_1")$getPotentialCols()
 cz_leq_0 <- cz_suspect_cols$getColCheck("upto_0")$getPotentialCols()
 cz_geq_1 <- cz_suspect_cols$getColCheck("over_1")$getPotentialCols()
 
-
 leq_0_not_NA <- cty_suspect_cols$getColCheck("upto_0")$createColFilter(
     pattern = "tax|subcty_exp_pc|score_r|lf_d|pop_d|scap_ski|_z",
     filterNonMatches = TRUE
@@ -100,12 +99,9 @@ filters <- list(leq_0_not_NA, greq_1_NA)
 cty_impute <- process_imputation(cty_covars, filters, cty_data, cty_non_imputed)
 cz_impute <- process_imputation(cz_covars, filters, cz_data, cz_non_imputed)
 
-# Reconnect to the SQLite database
 db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
-# Write tables to SQLite database
 dbWriteTable(db, "final_imputed_county", cty_impute)
 dbWriteTable(db, "final_imputed_cz", cz_impute)
 
-# Close the SQLite database connection
 dbDisconnect(db)
