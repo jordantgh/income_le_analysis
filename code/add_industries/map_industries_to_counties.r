@@ -101,14 +101,14 @@ dbWriteTable(
     db,
     "county_dominant_industries_2001",
     dominant_industry,
-    overwrite = FALSE
+    overwrite = TRUE
 )
 
 dbWriteTable(
     db,
     "county_toplevel_industries_2001",
     top_level_industries,
-    overwrite = FALSE
+    overwrite = TRUE
 )
 
 dbDisconnect(db)

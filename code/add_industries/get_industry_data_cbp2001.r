@@ -16,10 +16,5 @@ table_name <- "complete_county_industries_2001"
 
 db <- dbConnect(SQLite(), db_file)
 
-if (!dbExistsTable(db, table_name)) {
-    dbWriteTable(db, table_name, read_csv(g("{dir}/cbp01co.txt")))
-    dbDisconnect(db)
-} else {
-    cat(g("Table {table_name} already exists in the database. Skipping import.\n")) # nolint
-    dbDisconnect(db)
-}
+dbWriteTable(db, table_name, read_csv(g("{dir}/cbp01co.txt")), overwrite = TRUE)
+dbDisconnect(db)

@@ -33,9 +33,9 @@ box::use(
     mice[md.pattern, mice, complete],
     tibble[as_tibble],
     rlang[parse_expr],
-    ./code/county/process_tables/queries[...],
-    ./code/county/process_tables/cleanup_functions[...],
-    ./code/county/process_tables/classes[...]
+    ./code/process_tables/queries[...],
+    ./code/process_tables/cleanup_functions[...],
+    ./code/process_tables/classes[...]
 )
 ```
 
@@ -180,8 +180,8 @@ cz_impute <- process_imputation(cz_covars, filters, cz_data, cz_non_imputed)
 ```{r}
 db <- dbConnect(SQLite(), g("{dir}/income_le.sqlite"))
 
-dbWriteTable(db, "final_imputed_county", cty_impute)
-dbWriteTable(db, "final_imputed_cz", cz_impute)
+dbWriteTable(db, "final_imputed_county", cty_impute, overwrite = TRUE)
+dbWriteTable(db, "final_imputed_cz", cz_impute, overwrite = TRUE)
 
 dbDisconnect(db)
 ```

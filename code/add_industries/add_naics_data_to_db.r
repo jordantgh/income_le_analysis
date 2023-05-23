@@ -34,12 +34,8 @@ data <- read.delim(g("{dir}/{fname}.tsv"),
 )
 
 db_file <- g("{here::here()}/income_le.sqlite")
-
 db <- dbConnect(SQLite(), db_file)
-if (!dbExistsTable(db, fname)) {
-  dbWriteTable(db, fname, data)
-  dbDisconnect(db)
-} else {
-  cat(g("Table {fname} already exists in the database. Skipping import.\n")) # nolint
-  dbDisconnect(db)
-}
+
+dbWriteTable(db, fname, data, overwrite = TRUE)
+
+dbDisconnect(db)
