@@ -11,26 +11,25 @@ get_csv_files <- function(path) {
   return(files[grep("\\.csv$", files)])
 }
 
-import_csv_to_sqlite <- function(file_path, con) {
+import_csv_to_sqlite <- function(file_path, db) {
   table <- file_path_sans_ext(basename(file_path))
 
-  # Check if the table already exists in the database
-  if (dbExistsTable(con, table)) {
+  if (dbExistsTable(db, table)) {
     cat(g("Table {table} already exists in the database. Skipping import.\n"))
     return()
   }
 
   data <- read_csv(file_path)
-  dbWriteTable(con, table, data)
+  dbWriteTable(db, table, data)
 }
 
 db_path <- "income_le.sqlite"
-con <- dbConnect(SQLite(), db_path)
+db <- dbConnect(SQLite(), db_path)
 
-file_paths <- get_csv_files(g("{getOption('project_root')}/data/"))
+file_paths <- get_csv_files(g("{here::here()}/data/"))
 
 for (file_path in file_paths) {
-  import_csv_to_sqlite(file_path, con)
+  import_csv_to_sqlite(file_path, db)
 }
 
-dbDisconnect(con)
+dbDisconnect(db)

@@ -1,0 +1,23 @@
+{
+  "name": "Income LE R Development Container",
+  "image": "income_le_analysis:latest",
+  "forwardPorts": [
+    3832
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "REditorSupport.r"
+      ],
+      "settings": {
+        "r.bracketedPaste": true,
+        "r.rterm.linux": "/root/.local/bin/radian",
+        "r.lsp.enabled": true,
+        "r.rpath.linux": "/usr/bin/R",
+        "r.rterm.options": [
+          "--no-save",
+          "--no-restore"
+        ]}
+    }
+  }
+}
