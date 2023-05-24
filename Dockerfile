@@ -6,11 +6,11 @@ WORKDIR /app
 COPY . /app
 
 RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    libssl-dev \
-    libudunits2-dev \
-    && rm -rf /var/lib/apt/lists/*
+  gdal-bin \
+  libgdal-dev \
+  libssl-dev \
+  libudunits2-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN Rscript --no-init-file -e 'source("requirements.r")'
 

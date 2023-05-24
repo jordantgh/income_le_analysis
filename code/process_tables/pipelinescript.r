@@ -1,18 +1,18 @@
 box::use(
-    DBI[dbConnect, dbGetQuery, dbWriteTable, dbDisconnect],
-    RSQLite[SQLite],
-    glue[g = glue],
-    ggplot2[...],
-    dplyr[...],
-    purrr[keep, map, pmap_dfc],
-    utils[head, tail],
-    stats[sd, lm],
-    mice[md.pattern, mice, complete],
-    tibble[as_tibble],
-    rlang[parse_expr],
-    ./code/process_tables/queries[...],
-    ./code/process_tables/cleanup_functions[...],
-    ./code/process_tables/classes[...]
+  DBI[dbConnect, dbGetQuery, dbWriteTable, dbDisconnect],
+  RSQLite[SQLite],
+  glue[g = glue],
+  ggplot2[...],
+  dplyr[...],
+  purrr[keep, map, pmap_dfc],
+  utils[head, tail],
+  stats[sd, lm],
+  mice[md.pattern, mice, complete],
+  tibble[as_tibble],
+  rlang[parse_expr],
+  . / code / process_tables / queries[...],
+  . / code / process_tables / cleanup_functions[...],
+  . / code / process_tables / classes[...]
 )
 
 dir <- here::here()
@@ -28,46 +28,46 @@ cz_crosswalk <- get_cz_crosswalk(db)
 dbDisconnect(db)
 
 cty_data <- left_join(cty_le_agg, cty_covariates, by = "cty") %>%
-    left_join(cty_crosswalk, by = "cty")
+  left_join(cty_crosswalk, by = "cty")
 
 cz_data <- left_join(cz_le_agg, cz_covariates, by = "cz") %>%
-    left_join(cz_crosswalk, by = "cz")
+  left_join(cz_crosswalk, by = "cz")
 
 cty_unwanted <- c(
-    "csa",
-    "csa_name",
-    "cbsa",
-    "cbsa_name",
-    "tuition"
+  "csa",
+  "csa_name",
+  "cbsa",
+  "cbsa_name",
+  "tuition"
 )
 
 cty_non_imputed <- c(
-    "cty",
-    "county_name",
-    "cz",
-    "cz_name",
-    "cz_pop2000",
-    "state_id",
-    "stateabbrv",
-    "statename",
-    "Region",
-    "intersects_msa",
-    "top_industry",
-    "top_industry_employment"
+  "cty",
+  "county_name",
+  "cz",
+  "cz_name",
+  "cz_pop2000",
+  "state_id",
+  "stateabbrv",
+  "statename",
+  "Region",
+  "intersects_msa",
+  "top_industry",
+  "top_industry_employment"
 )
 
 cty_covars <- cty_data %>% StripCols(c(cty_unwanted, cty_non_imputed))
 
 cz_non_imputed <- c(
-    "cz",
-    "czname",
-    "pop2000",
-    "fips",
-    "stateabbrv",
-    "statename",
-    "Region",
-    "taxrate",
-    "tax_st_diff_top20"
+  "cz",
+  "czname",
+  "pop2000",
+  "fips",
+  "stateabbrv",
+  "statename",
+  "Region",
+  "taxrate",
+  "tax_st_diff_top20"
 )
 
 cz_covars <- cz_data %>% StripCols(cz_non_imputed)
@@ -86,12 +86,12 @@ cz_leq_0 <- cz_suspect_cols$getColCheck("upto_0")$getPotentialCols()
 cz_geq_1 <- cz_suspect_cols$getColCheck("over_1")$getPotentialCols()
 
 leq_0_not_NA <- cty_suspect_cols$getColCheck("upto_0")$createColFilter(
-    pattern = "tax|subcty_exp_pc|score_r|lf_d|pop_d|scap_ski|_z",
-    filterNonMatches = TRUE
+  pattern = "tax|subcty_exp_pc|score_r|lf_d|pop_d|scap_ski|_z",
+  filterNonMatches = TRUE
 )
 
 greq_1_NA <- cz_suspect_cols$getColCheck("over_1")$createColFilter(
-    pattern = "gini|inc_share_1perc|cs00_|cur_smoke|bmi_obese|exercise"
+  pattern = "gini|inc_share_1perc|cs00_|cur_smoke|bmi_obese|exercise"
 )
 
 filters <- list(leq_0_not_NA, greq_1_NA)

@@ -1,10 +1,10 @@
 box::use(
-    DBI[dbConnect, dbGetQuery, dbDisconnect],
-    RSQLite[SQLite]
+  DBI[dbConnect, dbGetQuery, dbDisconnect],
+  RSQLite[SQLite]
 )
 
 get_cty_le_agg <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT
     cty,
@@ -38,19 +38,19 @@ get_cty_le_agg <- function(db) {
 
     FROM t11_countyLE_bygender_byincquartile;
     "
-))
+  ))
 }
 
 get_cty_covariates <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT * FROM countyCovariates_with_industries;
     "
-))
+  ))
 }
 
 get_cz_le_agg <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT
     cz,
@@ -84,29 +84,29 @@ get_cz_le_agg <- function(db) {
 
     FROM t6_czLE_bygender_byincquartile;
     "
-))
+  ))
 }
 
 get_cz_covariates <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT * FROM t10_czCovariates;
     "
-))
+  ))
 }
 
 get_cty_crosswalk <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT cty, Region FROM cty_cz_st_crosswalk_with_region;
     "
-))
+  ))
 }
 
 get_cz_crosswalk <- function(db) {
-    return(dbGetQuery(
+  return(dbGetQuery(
     db, "
     SELECT DISTINCT cz, Region FROM cty_cz_st_crosswalk_with_region;
     "
-))
+  ))
 }

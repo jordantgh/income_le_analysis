@@ -1,8 +1,8 @@
 box::use(
-    glue[g = glue],
-    DBI[dbConnect, dbWriteTable, dbExistsTable, dbDisconnect],
-    RSQLite[SQLite],
-    readr[read_csv]
+  glue[g = glue],
+  DBI[dbConnect, dbWriteTable, dbExistsTable, dbDisconnect],
+  RSQLite[SQLite],
+  readr[read_csv]
 )
 
 dir <- g("{here::here()}/data/external_data/industry")
