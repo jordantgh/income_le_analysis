@@ -1,24 +1,26 @@
 # Use the official R image as the base image
 FROM r-base:latest
 
-WORKDIR /app
+WORKDIR /bootstrap
 
-COPY . /app
-
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
+  # app dependencies:
   gdal-bin \
   libgdal-dev \
   libssl-dev \
   libudunits2-dev \
+  # dev dependencies:
+  git \
+  libxml2-dev \
+  libfontconfig1-dev \
+  python3 \
+  pipx \
+  && pipx install radian \
+  && pipx ensurepath \
+  # clean up:
   && rm -rf /var/lib/apt/lists/*
 
-RUN Rscript --no-init-file -e 'source("requirements.r")'
-
-RUN Rscript -e 'source("code/init.r")'
-
-RUN Rscript -e 'source("code/process_tables/pipelinescript.r")'
+COPY ./requirements.r /bootstrap
+RUN Rscript -e 'source("requirements.r")'
 
 EXPOSE 3832
-
-# Run the shiny app when the container launches
-CMD ["R", "--slave", "-e", "shiny::runApp('code/shinyapp/app.r', port = 3832, host = '0.0.0.0')"]
