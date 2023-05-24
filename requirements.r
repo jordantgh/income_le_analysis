@@ -1,4 +1,8 @@
 dependencies <- c(
+  #dev (vscode) dependencies:
+  "languageserver",
+  "httpgd",
+  #app dependencies:
   "here",
   "box",
   "shiny",
