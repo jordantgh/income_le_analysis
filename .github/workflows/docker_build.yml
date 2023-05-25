@@ -26,6 +26,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .devcontainer
-        dockerfile: Dockerfile
         push: true
         tags: jordantdocker/income_le_analysis:latest
