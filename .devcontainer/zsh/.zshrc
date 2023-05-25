@@ -1,8 +1,4 @@
-# # Set up the prompt
-
-# autoload -Uz promptinit
-# promptinit
-# prompt adam1
+# Set up the prompt
 
 email=$(git config --get user.email)
 
