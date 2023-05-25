@@ -1,6 +1,8 @@
 {
   "name": "Income LE R Development Container",
   "image": "jordantdocker/income_le_analysis:latest",
+  "remoteUser": "ile_dev",
+  "updateRemoteUserUID": true,
   "forwardPorts": [
     3832
   ],

@@ -1,7 +1,21 @@
 # Use the official R image as the base image
 FROM r-base:latest
 
-RUN apt update && apt install -y \
+# new user setup
+ARG USER=ile_dev
+ARG HOME=/home/${USER}
+
+RUN addgroup ${USER} \
+    && adduser --disabled-password --gecos '' ${USER} \
+    && adduser ${USER} sudo \
+    && echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER} \
+    && chmod 0440 /etc/sudoers.d/${USER} \
+    && mkdir -p ${HOME}/.zshconfig ${HOME}/bootstrapr
+
+USER ${USER}
+WORKDIR ${HOME}
+
+RUN sudo apt update && sudo apt install -y \
   # app dependencies:
   gdal-bin \
   libgdal-dev \
@@ -15,20 +29,20 @@ RUN apt update && apt install -y \
   libfontconfig1-dev \
   python3 \
   pipx \
-  && pipx install radian \
-  && pipx ensurepath \
-  && apt update \
+  && sudo pipx install radian \
+  && sudo pipx ensurepath \
+  && sudo apt update \
   # clean up:
-  && rm -rf /var/lib/apt/lists/*
+  && sudo rm -rf /var/lib/apt/lists/*
 
-WORKDIR /root/.zshconfig
-COPY ./zsh/install.sh /root/.zshconfig/
-COPY ./zsh/gitprompt.zsh /root/.zshconfig/
-RUN chmod +x /root/.zshconfig/install.sh && bash /root/.zshconfig/install.sh
-COPY ./zsh/.zshrc /root/.zshrc
+WORKDIR ${HOME}/.zshconfig
+COPY ./zsh/install.sh ${HOME}/.zshconfig/
+COPY ./zsh/gitprompt.zsh ${HOME}/.zshconfig/
+RUN sudo chmod +x ${HOME}/.zshconfig/install.sh && bash ${HOME}/.zshconfig/install.sh
+COPY ./zsh/.zshrc ${HOME}/.zshrc
 
-WORKDIR /bootstrapr
-COPY ./requirements.r /bootstrapr
+WORKDIR ${HOME}/bootstrapr
+COPY ./requirements.r ${HOME}/bootstrapr
 RUN Rscript -e 'source("requirements.r")'
 
 EXPOSE 3832
