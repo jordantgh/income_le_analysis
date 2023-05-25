@@ -8,8 +8,8 @@ else
     username=${email%%@*}
 fi
 
-source /root/.zshconfig/git-prompt.zsh/git-prompt.zsh
-source /root/.zshconfig/gitprompt.zsh
+source ${HOME}/.zshconfig/git-prompt.zsh/git-prompt.zsh
+source ${HOME}/.zshconfig/gitprompt.zsh
 PROMPT='%F{green}[%T]%f %F{blue}'"$username"'@devcontainer%f %F{yellow}%~%f $(gitprompt)%B%F{magenta}>%f '
 
 setopt histignorealldups sharehistory
@@ -27,13 +27,13 @@ bindkey '^[[3;5~' kill-word # Ctrl + delete deletes
 # remove dot and slash from word characters to navigate line
 WORDCHARS=${WORDCHARS//[\/.]}
 
-# Keep 1000 lines of history within the shell and save it to /root/.zsh_history:
+# Keep 1000 lines of history within the shell and save it to ${HOME}/.zsh_history:
 HISTSIZE=1000
 SAVEHIST=1000
-HISTFILE=/root/.zsh_history
+HISTFILE=${HOME}/.zsh_history
 
 # Use modern completion system
-source /root/.zshconfig/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-source /root/.zshconfig/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ${HOME}/.zshconfig/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source ${HOME}/.zshconfig/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /etc/zsh_command_not_found
-source /root/.zshconfig/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${HOME}/.zshconfig/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
