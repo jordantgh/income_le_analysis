@@ -1,15 +1,24 @@
 {
   "name": "Income LE R Development Container",
-  "image": "income_le_analysis:latest",
+  "image": "jordantdocker/income_le_analysis:latest",
   "forwardPorts": [
     3832
   ],
   "customizations": {
     "vscode": {
       "extensions": [
-        "REditorSupport.r"
+        "REditorSupport.r",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
       ],
       "settings": {
+        "extensions.ignoreRecommendations": true,
+        "terminal.integrated.defaultProfile.linux": "zsh", 
+        "terminal.integrated.profiles.linux": {
+            "zsh": {
+                "path": "/usr/bin/zsh"
+            }
+        },
         "r.bracketedPaste": true,
         "r.rterm.linux": "/root/.local/bin/radian",
         "r.lsp.enabled": true,
@@ -19,5 +28,7 @@
           "--no-restore"
         ]}
     }
-  }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+  "workspaceFolder": "/app"
 }
