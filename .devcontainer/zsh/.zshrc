@@ -27,7 +27,7 @@ bindkey '^[[3;5~' kill-word # Ctrl + delete deletes
 # remove dot and slash from word characters to navigate line
 WORDCHARS=${WORDCHARS//[\/.]}
 
-# Keep 1000 lines of history within the shell and save it to ${HOME}/.zsh_history:
+# Keep 1000 lines of history within the shell and save it to home/user/.zsh_history:
 HISTSIZE=1000
 SAVEHIST=1000
 HISTFILE=${HOME}/.zsh_history
