@@ -2,7 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ dev ]
+    branches: 
+      - dev
+      - main
     paths:
       - '.devcontainer/**'
       - '!.devcontainer/devcontainer.json'
