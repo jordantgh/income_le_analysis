@@ -1,7 +1,7 @@
 {
   "name": "Income LE R Development Container",
   "image": "jordantdocker/income_le_analysis:latest",
-  //"dockerFile": "Dockerfile",
+  //"dockerFile": "Dockerfile", - use only for quick debug stuff
   "updateRemoteUserUID": true,
   "forwardPorts": [
     3832
