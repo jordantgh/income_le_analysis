@@ -24,7 +24,7 @@
             }
         },
         "r.bracketedPaste": true,
-        "r.rterm.linux": "/root/.local/bin/radian",
+        "r.rterm.linux": "/home/ile_dev/.local/bin/radian",
         "r.lsp.enabled": true,
         "r.rpath.linux": "/usr/bin/R",
         "r.rterm.options": [
