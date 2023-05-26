@@ -1,7 +1,7 @@
 {
   "name": "Income LE R Development Container",
-  //"image": "jordantdocker/income_le_analysis:latest", - use once fixed
-  "dockerFile": "Dockerfile",
+  "image": "jordantdocker/income_le_analysis:latest",
+  //"dockerFile": "Dockerfile",
   "updateRemoteUserUID": true,
   "forwardPorts": [
     3832
