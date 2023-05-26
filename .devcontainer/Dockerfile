@@ -5,17 +5,24 @@ FROM r-base:latest
 ARG USER=ile_dev
 ARG HOME=/home/${USER}
 
-RUN addgroup ${USER} \
+RUN apt update && apt install -y sudo adduser \
     && adduser --disabled-password --gecos '' ${USER} \
     && adduser ${USER} sudo \
     && echo "${USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USER} \
     && chmod 0440 /etc/sudoers.d/${USER} \
-    && mkdir -p ${HOME}/.zshconfig ${HOME}/bootstrapr
+    && chown -R ${USER}:${USER} ${HOME}
 
+# Switch to new user
 USER ${USER}
-WORKDIR ${HOME}
 
-RUN sudo apt update && sudo apt install -y \
+# Create a directory for user-specific R packages and set it as default
+RUN mkdir -p ${HOME}/R/x86_64-pc-linux-gnu-library
+ENV R_LIBS_USER ${HOME}/R/x86_64-pc-linux-gnu-library
+
+# Switch back to root for installations
+USER root
+
+RUN apt update && apt install -y \
   # app dependencies:
   gdal-bin \
   libgdal-dev \
@@ -29,20 +36,25 @@ RUN sudo apt update && sudo apt install -y \
   libfontconfig1-dev \
   python3 \
   pipx \
-  && sudo pipx install radian \
-  && sudo pipx ensurepath \
-  && sudo apt update \
+  && pipx install radian \
+  && pipx ensurepath \
+  && apt update \
   # clean up:
-  && sudo rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
-WORKDIR ${HOME}/.zshconfig
-COPY ./zsh/install.sh ${HOME}/.zshconfig/
-COPY ./zsh/gitprompt.zsh ${HOME}/.zshconfig/
-RUN sudo chmod +x ${HOME}/.zshconfig/install.sh && bash ${HOME}/.zshconfig/install.sh
-COPY ./zsh/.zshrc ${HOME}/.zshrc
 
 WORKDIR ${HOME}/bootstrapr
 COPY ./requirements.r ${HOME}/bootstrapr
 RUN Rscript -e 'source("requirements.r")'
 
 EXPOSE 3832
+
+RUN userdel -r docker
+RUN apt update && apt install openssh-client -y
+
+USER ${USER}
+WORKDIR ${HOME}/.zshconfig
+COPY ./zsh/install.sh ${HOME}/.zshconfig/
+COPY ./zsh/gitprompt.zsh ${HOME}/.zshconfig/
+RUN sudo chmod +x ${HOME}/.zshconfig/install.sh && bash ${HOME}/.zshconfig/install.sh
+COPY ./zsh/.zshrc ${HOME}/.zshrc

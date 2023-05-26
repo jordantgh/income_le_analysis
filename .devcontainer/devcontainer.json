@@ -2,7 +2,6 @@
   "name": "Income LE R Development Container",
   //"image": "jordantdocker/income_le_analysis:latest", - use once fixed
   "dockerFile": "Dockerfile",
-  "containerUser": "ile_dev",
   "updateRemoteUserUID": true,
   "forwardPorts": [
     3832
@@ -33,5 +32,6 @@
     }
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
-  "workspaceFolder": "/app"
+  "workspaceFolder": "/app",
+  "postCreateCommand": "mkdir -p ~/.ssh && printf 'Host github.com\nHostName github.com\nUser git' > ~/.ssh/config && chmod 600 ~/.ssh/config"
 }
