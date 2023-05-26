@@ -1,7 +1,9 @@
 {
   "name": "Income LE R Development Container",
   "image": "jordantdocker/income_le_analysis:latest",
-  //"dockerFile": "Dockerfile", - use only for quick debug stuff
+  // Build from local dockerfile; ONLY do this from a non-container env to test
+  // major or potentially breaking Dockerfile/requirements.r changes:
+  //"dockerFile": "Dockerfile" 
   "updateRemoteUserUID": true,
   "forwardPorts": [
     3832
