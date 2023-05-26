@@ -1,6 +1,5 @@
 .vscode
 data/external_data/industry/*
-!data/external_data/industry
 *.zip
 code/summarise_tables.r
 *.xlsx
