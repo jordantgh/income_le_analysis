@@ -14,7 +14,7 @@ To get started with the container, make sure you have [Docker installed](https:/
 
 Clone the repo and open it inside VS code. You should be prompted with an option to "Reopen in Container" at the bottom right; if not, you can do it from the command palette (`Ctrl + Shift + P`) - just type "Dev Containers: " and you should see the option to open in the container. 
 
-It will initially take a minute to download the containerised image from Docker Hub and get things set up, but you will quickly find yourself in a Debian environment with a `zsh` command prompt. The only thing left to do is check your `git` authentication. First, see if you already have access to the remote:
+It will initially take a moment to download the containerised image from Docker Hub and get things set up, but you will quickly find yourself in a Debian environment with a `zsh` command prompt. The only thing left to do is check your `git` authentication. First, see if you already have access to the remote:
 
 ```
 git ls-remote
