@@ -8,7 +8,7 @@ Our goal with this project is to make the large collection of granular data acce
 
 ## How to contribute
 
-It is possible to simply clone the repo and start submitting pull requests if you are set up for it, but this project is heavy on dependencies. Thus I have provided a containerised development environment via Docker that will allow you to execute all the R code without any problems. This assumes you are working in VS code; if you want to work in RStudio or any other editor, I can't guarantee things won't break. However, rest assured that all of the VSC:R crosstalk is set up within the container. 
+It is possible to simply clone the repo and start submitting pull requests if you are set up for it, but this project is heavy on dependencies. Thus I have provided a containerised development environment via Docker that will allow you to execute all the R code without any problems. This assumes you are working in VS code; if you want to work in RStudio or any other editor, I can't guarantee things won't break. However, rest assured that all of the VSC:R crosstalk is set up within the container. (If you do want to do things manually, just check the `requirements.r`, `devcontainer.json` and `Dockerfile` under `.devcontainer` to get an idea for what is required)
 
 To get started with the container, make sure you have [Docker installed](https://docs.docker.com/) and running.
 
