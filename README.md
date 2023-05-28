@@ -22,5 +22,8 @@ git ls-remote
 
 Unless you already have SSH forwarding correctly set up, this probably won't work. From here you have a few choices. 
 
-- For SSH agent forwarding (Linux only), make sure you have your SSH key added to the SSH agent and add `ForwardAgent yes` to the Github line of your ~/.ssh/config file.
-- 
+- For SSH agent forwarding (Linux only), make sure you have your SSH key added to the SSH agent and add `ForwardAgent yes` to the GitHub line of your ~/.ssh/config file (on your local machine, not within the container)
+- You may copy the keys from your local machine directly into the ~/.ssh/ dir of the container
+- You can use the GitHub CLI client (`gh`) to create new keys *in situ* for the container - use `gh auth login` and you will be prompted to authenticate with GitHub and given the option to create new keys, which will automatically be added to your GitHub account
+
+In all cases, make sure the keys are read only (if not, use `chmod 400 </path/to/key>`) - you will not be able to push or pull commits without this. 
