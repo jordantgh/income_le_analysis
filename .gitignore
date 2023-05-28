@@ -1,6 +1,7 @@
 .vscode
-data/external_data/industry/*
-*.zip
+*.txt
+*.tsv
 code/summarise_tables.r
 *.xlsx
 *.sqlite
+co99_d00_shp.zip
