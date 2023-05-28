@@ -17,6 +17,7 @@ RUN apt update && apt install -y --no-install-recommends \
   zsh \
   command-not-found \
   git \
+  gh \
   libxml2-dev \
   libfontconfig1-dev \
   python3 \
