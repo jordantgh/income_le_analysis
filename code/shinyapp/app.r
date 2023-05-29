@@ -5,6 +5,7 @@ box::use(
   DBI[...],
   RSQLite[SQLite],
   ggplot2[...],
+  plotly[...],
   readr[...],
   leaflet[...],
   leaflet.providers[...],
@@ -110,21 +111,21 @@ body <- dashboardBody(
       div(
         id = "dashboard-grid",
         box(
-          plotOutput("scatterPlot",
+          plotlyOutput("scatterPlot",
             height = "100%",
             width = "100%"
           ),
           width = 12
         ),
         box(
-          plotOutput("barChart",
+          plotlyOutput("barChart",
             height = "100%",
             width = "100%"
           ),
           width = 12
         ),
         box(
-          plotOutput("kernelDensity",
+          plotlyOutput("kernelDensity",
             height = "100%",
             width = "100%"
           ),
@@ -154,18 +155,20 @@ server <- function(input, output) {
     }
   })
 
-  output$scatterPlot <- renderPlot({
-    ggplot(
+  output$scatterPlot <- renderPlotly({
+    p <- ggplot(
       selected_data(),
       aes(x = !!sym(input$x_var), y = !!sym(input$y_var))
     ) +
       geom_point(aes(color = !!sym(
         if (input$level == "county_name") input$group_var else "Region"
       )))
+
+    ggplotly(p)
   })
 
-  output$barChart <- renderPlot({
-    ggplot(
+  output$barChart <- renderPlotly({
+    p <- ggplot(
       selected_data()[!is.na(selected_data()[[
         if (input$level == "county_name") input$group_var else "Region"
       ]]), ],
@@ -184,11 +187,13 @@ server <- function(input, output) {
         if (input$level == "county_name") input$group_var else "Region"
       ))) +
       labs(x = "Region", y = "Current Smoking Rate (q1)")
+
+    ggplotly(p)
   })
 
 
-  output$kernelDensity <- renderPlot({
-    ggplot(
+  output$kernelDensity <- renderPlotly({
+    p <- ggplot(
       selected_data()[!is.na(selected_data()), ]
     ) +
       geom_density(aes(
@@ -197,6 +202,8 @@ server <- function(input, output) {
       geom_density(aes(
         x = scale(!!sym(input$y_var))
       ), color = "red") # added population weights
+
+    ggplotly(p)
   })
 
 
