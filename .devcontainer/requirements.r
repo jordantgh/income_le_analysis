@@ -9,6 +9,7 @@ dependencies <- c(
   "shinydashboard",
   "shinyWidgets",
   "ggplot2",
+  "plotly",
   "ggbeeswarm",
   "readr",
   "leaflet",
