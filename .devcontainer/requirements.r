@@ -11,6 +11,7 @@ dependencies <- c(
   "ggplot2",
   "plotly",
   "ggbeeswarm",
+  "ggprism",
   "readr",
   "leaflet",
   "leaflet.providers",
