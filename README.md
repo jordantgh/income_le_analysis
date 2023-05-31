@@ -26,4 +26,4 @@ Unless you already have SSH forwarding correctly set up, this probably won't wor
 - You may copy the keys from your local machine directly into the ~/.ssh/ dir of the container
 - You can use the GitHub CLI client (`gh`) to create new keys *in situ* for the container - use `gh auth login` and you will be prompted to authenticate with GitHub and given the option to create new keys, which will automatically be added to your GitHub account
 
-In all cases, make sure the keys are read only (if not, use `chmod 400 </path/to/key>`) - you will not be able to push or pull commits without this. Finally, you need to add `IdentityFile /path/to/private/key` to the GitHub line of your ~/.ssh/config file.
+In all cases, make sure the keys are read only (if not, use `chmod 400 </path/to/key>`) - you will not be able to push or pull commits without this. Finally, you need to add `IdentityFile /path/to/private/key` to the GitHub line of your ~/.ssh/config file (within the container).
