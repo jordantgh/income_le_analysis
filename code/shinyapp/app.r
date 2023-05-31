@@ -13,7 +13,8 @@ box::use(
   purrr[...],
   sf[...],
   ggbeeswarm[...],
-  glue[g = glue]
+  glue[g = glue],
+  ggprism[...]
 )
 
 dir <- here::here()
@@ -65,13 +66,13 @@ sidebar <- dashboardSidebar(
       selectInput(
         inputId = "x_var",
         label = "X Variable:",
-        choices = alt_names_list,
+        choices = alt_names_list[-(1:10)],
         selected = "cur_smoke_q1"
       ),
       selectInput(
         inputId = "y_var",
         label = "Y Variable:",
-        choices = alt_names_list,
+        choices = alt_names_list[-(1:10)],
         selected = "le_agg_q1"
       ),
       prettyRadioButtons(
@@ -157,12 +158,20 @@ server <- function(input, output) {
 
   output$scatterPlot <- renderPlotly({
     p <- ggplot(
-      selected_data(),
+      selected_data()[!is.na(selected_data()[[
+        if (input$level == "county_name") input$group_var else "Region"
+      ]]), ],
       aes(x = !!sym(input$x_var), y = !!sym(input$y_var))
     ) +
       geom_point(aes(color = !!sym(
         if (input$level == "county_name") input$group_var else "Region"
-      )))
+      ))) +
+      labs(
+        x = names(keep(alt_names_list, \(x) x == input$x_var)),
+        y = names(keep(alt_names_list, \(x) x == input$y_var))
+      ) +
+      theme_prism() +
+      theme(text = element_text(size = 11,  family = "roboto"))
 
     ggplotly(p)
   })
@@ -186,25 +195,48 @@ server <- function(input, output) {
       geom_beeswarm(aes(color = !!sym(
         if (input$level == "county_name") input$group_var else "Region"
       ))) +
-      labs(x = "Region", y = "Current Smoking Rate (q1)")
+      labs(
+        x = "Region",
+        y = names(keep(alt_names_list, \(x) x == input$y_var))
+      ) +
+      theme_prism() +
+      theme(text = element_text(size = 11,  family = "roboto"))
 
     ggplotly(p)
   })
 
 
   output$kernelDensity <- renderPlotly({
-    p <- ggplot(
-      selected_data()[!is.na(selected_data()), ]
-    ) +
-      geom_density(aes(
-        x = scale(!!sym(input$x_var))
-      ), color = "green") + # added population weights
-      geom_density(aes(
-        x = scale(!!sym(input$y_var))
-      ), color = "red") # added population weights
+    p <- ggplot(selected_data()[!is.na(selected_data()), ]) +
+      geom_histogram(aes(
+        x = scale(!!sym(input$x_var)),
+        fill = names(keep(alt_names_list, \(x) x == input$x_var))
+      ), color = "black", bins = 30, alpha = 0.5) +
+      geom_histogram(aes(
+        x = scale(!!sym(input$y_var)),
+        fill = names(keep(alt_names_list, \(x) x == input$y_var))
+      ), color = "black", bins = 30, alpha = 0.5) +
+      scale_fill_manual(
+        name = "Variable",
+        labels = c(
+          names(keep(alt_names_list, \(x) x == input$x_var)),
+          names(keep(alt_names_list, \(x) x == input$y_var))
+        ),
+        values = c("green", "red")
+      ) +
+      labs(
+        x = "Standardized Value",
+        y = "Count"
+      ) +
+      theme_prism() +
+      theme(text = element_text(size = 11,  family = "roboto"))
 
-    ggplotly(p)
+    ggplotly(p) %>% layout(legend = list(
+      x = 0.6, y = 1, font = list(size = 11)
+    ))
   })
+
+
 
 
   color_scale <- reactive({
