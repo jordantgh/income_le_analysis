@@ -236,9 +236,6 @@ server <- function(input, output) {
     ))
   })
 
-
-
-
   color_scale <- reactive({
     colorNumeric(
       palette = "viridis",
