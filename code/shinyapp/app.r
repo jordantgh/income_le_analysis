@@ -170,6 +170,7 @@ server <- function(input, output) {
         x = names(keep(alt_names_list, \(x) x == input$x_var)),
         y = names(keep(alt_names_list, \(x) x == input$y_var))
       ) +
+      ggtitle("Scatter Plot") +
       theme_prism() +
       theme(text = element_text(size = 11,  family = "roboto"))
 
@@ -196,9 +197,10 @@ server <- function(input, output) {
         if (input$level == "county_name") input$group_var else "Region"
       ))) +
       labs(
-        x = "Region",
+        x = if (input$level == "county_name") input$group_var else "Region",
         y = names(keep(alt_names_list, \(x) x == input$y_var))
       ) +
+      ggtitle("Violin Plots") +
       theme_prism() +
       theme(text = element_text(size = 11,  family = "roboto"))
 
@@ -228,6 +230,7 @@ server <- function(input, output) {
         x = "Standardized Value",
         y = "Count"
       ) +
+      ggtitle("National distribution histograms") +
       theme_prism() +
       theme(text = element_text(size = 11,  family = "roboto"))
 
