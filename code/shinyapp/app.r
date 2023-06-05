@@ -16,7 +16,7 @@ box::use(
   glue[g = glue],
   ggprism[...]
 )
-
+#creates a comment by Diana
 dir <- here::here()
 
 # Establish a connection to the SQLite database
