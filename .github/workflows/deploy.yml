@@ -37,5 +37,6 @@ jobs:
       run: |
           ssh deploy <<'ENDSSH'
             cd ${{ secrets.SELFHOST_SITEDIR }} && \
-            Rscript -e "source('code/init.r')"
+            Rscript -e "source('code/init.r')" && \
+            Rscript -e "source('code/process_tables/pipelinescript.r')"
           ENDSSH
