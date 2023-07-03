@@ -1,0 +1,28 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SELFHOST_PRIVATEKEY }}" > ~/.ssh/deploy.key
+        chmod 600 ~/.ssh/deploy.key
+        cat >>~/.ssh/config <<END
+        Host deploy
+          HostName ${{ secrets.SELFHOST_HOSTNAME }}
+          User ${{ secrets.SELFHOST_USER }}
+          IdentityFile ~/.ssh/deploy.key
+          StrictHostKeyChecking no
+        END
+    - name: Pull and Copy Code to Server
+      run: |
+        ssh deploy 'cd ${{ secrets.SELFHOST_PROJECTDIR }} && git pull'
+        ssh deploy 'cp -r ${{ secrets.SELFHOST_PROJECTDIR }}/code ${{ secrets.SELFHOST_SITEDIR }}'
+        ssh deploy 'cp -r ${{ secrets.SELFHOST_PROJECTDIR }}/data ${{ secrets.SELFHOST_SITEDIR }}'
+        ssh deploy 'cp ${{ secrets.SELFHOST_PROJECTDIR }}/.here ${{ secrets.SELFHOST_SITEDIR }}'
