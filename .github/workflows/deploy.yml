@@ -25,6 +25,11 @@ jobs:
       run: |
         ssh deploy 'cd ${{ secrets.SELFHOST_PROJECTDIR }} && git pull'
         ssh deploy 'mkdir -p ${{ secrets.SELFHOST_SITEDIR }}'
+
+        ssh deploy \
+        'cp ${{ secrets.SELFHOST_PROJECTDIR }}/.devcontainer/requirements.r \
+        ${{ secrets.SELFHOST_SITEDIR }}'
+
         ssh deploy 'cp -r ${{ secrets.SELFHOST_PROJECTDIR }}/code \
         ${{ secrets.SELFHOST_SITEDIR }}'
 
@@ -37,6 +42,7 @@ jobs:
       run: |
           ssh deploy <<'ENDSSH'
             cd ${{ secrets.SELFHOST_SITEDIR }} && \
+            Rscript -e "source('requirements.r')" && \
             Rscript -e "source('code/init.r')" && \
             Rscript -e "source('code/process_tables/pipelinescript.r')"
           ENDSSH
