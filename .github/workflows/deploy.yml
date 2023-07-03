@@ -19,6 +19,7 @@ jobs:
           User ${{ secrets.SELFHOST_USER }}
           IdentityFile ~/.ssh/deploy.key
           StrictHostKeyChecking no
+          Port ${{ secrets.SELFHOST_PORT }}
         END
     - name: Pull and Copy Code to Server
       run: |
