@@ -2,6 +2,7 @@ box::use(
   shiny[...],
   shinydashboard[...],
   shinyWidgets[...],
+  shinycssloaders[withSpinner],
   DBI[...],
   RSQLite[SQLite],
   ggplot2[...],
@@ -111,25 +112,24 @@ body <- dashboardBody(
       tabName = "dashboard",
       div(
         id = "dashboard-grid",
-        box(
-          plotlyOutput("scatterPlot",
+        box(withSpinner(plotlyOutput("scatterPlot",
             height = "100%",
             width = "100%"
-          ),
+          )),
           width = 12
         ),
         box(
-          plotlyOutput("barChart",
+          withSpinner(plotlyOutput("barChart",
             height = "100%",
             width = "100%"
-          ),
+          )),
           width = 12
         ),
         box(
-          plotlyOutput("kernelDensity",
+          withSpinner(plotlyOutput("kernelDensity",
             height = "100%",
             width = "100%"
-          ),
+          )),
           width = 12
         ),
         box(
