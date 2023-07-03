@@ -101,3 +101,7 @@ body {
 .selectize-input.items.full.has-options.has-items>input[type="text"] {
   position: absolute;
 }
+
+.loader {
+  margin-top: 300px !important;
+}
