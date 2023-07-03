@@ -24,6 +24,7 @@ jobs:
     - name: Pull and Copy Code to Server
       run: |
         ssh deploy 'cd ${{ secrets.SELFHOST_PROJECTDIR }} && git pull'
+        ssh deploy 'mkdir -p ${{ secrets.SELFHOST_SITEDIR }}'
         ssh deploy 'cp -r ${{ secrets.SELFHOST_PROJECTDIR }}/code \
         ${{ secrets.SELFHOST_SITEDIR }}'
 
@@ -32,7 +33,9 @@ jobs:
 
         ssh deploy 'cp ${{ secrets.SELFHOST_PROJECTDIR }}/.here \
         ${{ secrets.SELFHOST_SITEDIR }}'
-    - name: Run init R script
-      run: |
-        ssh deploy 'cd ${{ secrets.SELFHOST_SITEDIR }} && \
-        Rscript -e "source('income_le_analysis/code/init.r')"'
+        - name: Run init R script
+        run: |
+          ssh deploy <<'ENDSSH'
+            cd ${{ secrets.SELFHOST_SITEDIR }} && \
+            Rscript -e "source('code/init.r')"
+          ENDSSH
