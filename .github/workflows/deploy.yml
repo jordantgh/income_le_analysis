@@ -33,8 +33,8 @@ jobs:
 
         ssh deploy 'cp ${{ secrets.SELFHOST_PROJECTDIR }}/.here \
         ${{ secrets.SELFHOST_SITEDIR }}'
-        - name: Run init R script
-        run: |
+    - name: Run init R script
+      run: |
           ssh deploy <<'ENDSSH'
             cd ${{ secrets.SELFHOST_SITEDIR }} && \
             Rscript -e "source('code/init.r')"
