@@ -35,4 +35,4 @@ jobs:
     - name: Run init R script
       run: |
         ssh deploy 'cd ${{ secrets.SELFHOST_SITEDIR }} && \
-        Rscript income_le_analysis/code/init.r'
+        Rscript -e "source('income_le_analysis/code/init.r')"'
