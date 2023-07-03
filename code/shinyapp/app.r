@@ -64,16 +64,16 @@ sidebar <- dashboardSidebar(
       collapsible = TRUE,
       width = 12,
       selectInput(
-        inputId = "x_var",
-        label = "X Variable:",
-        choices = alt_names_list[-(1:10)],
-        selected = "cur_smoke_q1"
-      ),
-      selectInput(
         inputId = "y_var",
-        label = "Y Variable:",
+        label = "Outcome:",
         choices = alt_names_list[-(1:10)],
         selected = "le_agg_q1"
+      ),
+      selectInput(
+        inputId = "x_var",
+        label = "Predictor:",
+        choices = alt_names_list[-(1:10)],
+        selected = "cur_smoke_q1"
       ),
       prettyRadioButtons(
         inputId = "level",
